@@ -1,0 +1,17 @@
+# ===== Backend (Spring Boot / IntelliJ) =====
+backend/build/
+backend/.gradle/
+backend/.idea/
+backend/*.iml
+
+# ===== Frontend (Vite / React) =====
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# ===== IDE / OS =====
+.vscode/
+.DS_Store
+*.log
+
+
