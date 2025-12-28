@@ -8,6 +8,7 @@ import com.cloudBalance.dto.AddUserRequest;
 import com.cloudBalance.dto.UpdateUserRequest;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class UserController {
     }
 
     // GET all users
+    @PreAuthorize("hasAnyRole('ADMIN', 'READ_ONLY')")
     @GetMapping
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -49,6 +51,7 @@ public class UserController {
     }
 
     // CREATE user
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody AddUserRequest req) {
 
@@ -71,6 +74,7 @@ public class UserController {
 
 
     // UPDATE user
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(
             @PathVariable Long id,
@@ -96,6 +100,7 @@ public class UserController {
     }
 
     // DELETE user
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         if (!userRepository.existsById(id)) {

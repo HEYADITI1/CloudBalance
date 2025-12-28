@@ -1,3 +1,4 @@
+import { useAuth } from "../../context/AuthContext";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../Components/Header";
@@ -18,6 +19,9 @@ export default function AddUser() {
     isActive: false,
   });
 
+  const { user } = useAuth();
+
+
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
@@ -30,6 +34,11 @@ export default function AddUser() {
 
   const handleCreate = async (e) => {
     e.preventDefault();
+
+    if (user?.role !== "ADMIN") {
+    alert("You are not authorized to create users");
+    return;
+    }
 
     const payload = {
       firstName: form.firstName,
@@ -47,6 +56,16 @@ export default function AddUser() {
       alert("Failed to create user");
     }
   };
+
+  if (user?.role === "CUSTOMER") {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-red-600 text-sm">
+        You are not authorized to create users.
+      </p>
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -167,10 +186,15 @@ export default function AddUser() {
 
                     <button
                       type="submit"
-                      className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                      disabled={user?.role !== "ADMIN"}
+                      className={`px-4 py-2 text-sm rounded ${
+                      user?.role === "ADMIN"
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                       : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      }`}
                     >
-                      Create User
-                    </button>
+                     Create User
+                  </button>
                   </div>
                 </form>
               </div>

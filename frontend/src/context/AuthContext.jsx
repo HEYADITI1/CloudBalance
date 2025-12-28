@@ -13,7 +13,6 @@ export function AuthProvider({ children }) {
     localStorage.getItem("token") || null
   );
 
-  // LOGIN FUNCTION
   const login = async (email, password) => {
     const res = await api.post("/auth/login", {
       email,
@@ -22,7 +21,6 @@ export function AuthProvider({ children }) {
 
     const data = res.data;
 
-    // Save token + user info
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data));
 
@@ -32,7 +30,6 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  // LOGOUT FUNCTION
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");

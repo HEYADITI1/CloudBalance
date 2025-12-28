@@ -15,10 +15,8 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      // JWT login
       await login(email, password);
 
-      // redirect to users after success
       navigate("/users", { replace: true });
     } catch (err) {
       setError("Invalid email or password");

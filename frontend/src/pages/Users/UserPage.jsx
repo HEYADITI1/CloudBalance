@@ -1,3 +1,4 @@
+import { useAuth } from "../../context/AuthContext";
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../Components/Header";
@@ -18,6 +19,19 @@ export default function UserPage() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const { user } = useAuth();
+  const role = user?.role;
+
+  if (role === "CUSTOMER") {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <p className="text-red-600 text-sm">
+        You are not authorized to view user details.
+      </p>
+    </div>
+  );
+  }
 
   // Fetch users from API on mount
   useEffect(() => {
@@ -151,12 +165,14 @@ export default function UserPage() {
 
                   {/* Action buttons */}
                   <div className="flex items-center gap-3 mb-6">
-                    <button
-                      onClick={handleAddUser}
-                      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium shadow-sm"
-                    >
+                    {role === "ADMIN" && (
+                      <button
+                        onClick={handleAddUser}
+                        className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium shadow-sm"
+                      >
                       + Add New User
-                    </button>
+                      </button>
+                    )}
 
                     <button
                       onClick={handleResetFilters}
@@ -260,7 +276,8 @@ export default function UserPage() {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                   <div className="flex items-center gap-2">
                                     {/* active toggle */}
-                                    <button
+                                    {role=="ADMIN" && (
+                                      <button
                                       onClick={() => handleToggleActive(user.id)}
                                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                                         user.active
@@ -279,9 +296,11 @@ export default function UserPage() {
                                         }`}
                                       />
                                     </button>
+                                    )}
 
                                     {/* edit icon */}
-                                    <button
+                                    {role=="ADMIN" && (
+                                      <button
                                       onClick={() => handleEdit(user.id)}
                                       title="Edit"
                                       className="p-1 rounded hover:bg-gray-50"
@@ -308,6 +327,7 @@ export default function UserPage() {
                                         />
                                       </svg>
                                     </button>
+                                    )}
 
                                     {/* resend button */}
                                     <button

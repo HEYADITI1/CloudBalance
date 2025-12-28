@@ -17,13 +17,12 @@ export default function EditUser() {
     firstName: "",
     lastName: "",
     email: "",
-    role: "ADMIN",      // backend expects ADMIN, READ_ONLY, CUSTOMER
+    role: "ADMIN",
     isActive: true,
   });
 
   const [loading, setLoading] = useState(true);
 
-  // Load user details
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -34,7 +33,7 @@ export default function EditUser() {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          role: user.role?.name,     // backend sends { role: { name: "ADMIN" } }
+          role: user.role?.name,
           isActive: user.isActive,
         });
 
@@ -50,7 +49,6 @@ export default function EditUser() {
     fetchUser();
   }, [id, navigate]);
 
-  // Handle input changes
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
@@ -59,13 +57,11 @@ export default function EditUser() {
     }));
   };
 
-  // Cancel button
   const handleCancel = (e) => {
     e.preventDefault();
     navigate("/users");
   };
 
-  // Save changes (PUT API)
   const handleUpdate = async (e) => {
     e.preventDefault();
 
@@ -73,7 +69,7 @@ export default function EditUser() {
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.email,
-      role: form.role,          // must be ADMIN / READ_ONLY / CUSTOMER
+      role: form.role, 
       isActive: form.isActive,
     };
 
@@ -93,6 +89,17 @@ export default function EditUser() {
       </div>
     );
   }
+
+  if (user?.role === "CUSTOMER") {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-red-600 text-sm">
+        You are not authorized to edit users.
+      </p>
+    </div>
+  );
+  }
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -177,8 +184,8 @@ export default function EditUser() {
                         Role
                       </label>
                       <select
-                        name="role"           // ✔ CORRECT
-                        value={form.role}     // ✔ CORRECT
+                        name="role" 
+                        value={form.role}
                         onChange={onChange}
                         className="w-full border border-gray-200 rounded px-3 py-2 text-sm bg-white"
                       >
@@ -194,8 +201,8 @@ export default function EditUser() {
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input
                           type="checkbox"
-                          name="isActive"         // ✔ CORRECT
-                          checked={form.isActive} // ✔ CORRECT
+                          name="isActive"
+                          checked={form.isActive}
                           onChange={onChange}
                           className="sr-only"
                         />
@@ -226,10 +233,15 @@ export default function EditUser() {
 
                     <button
                       type="submit"
-                      className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+                      disabled={user?.role !== "ADMIN"}
+                      className={`px-4 py-2 text-sm rounded ${
+                      user?.role === "ADMIN"
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      }`}
                     >
-                      Save Changes
-                    </button>
+                    Save Changes
+                  </button>
                   </div>
 
                 </form>
