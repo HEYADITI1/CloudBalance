@@ -1,8 +1,28 @@
 import React from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-export default function Sidebar({ selected = "users", onSelect, collapsed = false }) {
+
+export default function Sidebar({ selected, collapsed = false }) {
+
+  const { user } = useAuth();
+  const role = user?.role;
+
+  const navigate = useNavigate();
+
   const menu = [
-    { id: "users", label: "Users", icon: "👥" },
+    ...(role !== "CUSTOMER"
+      ? [
+        { id: "users", label: "Users", icon: "👥", path: "/users" },
+        {
+          id: "onboarding",
+          label: "Client Onboarding",
+          icon: "🚀",
+          path: "/onboarding",
+        },
+      ]
+      : []),
+
     { id: "partner", label: "Partner Management", icon: "🤝" },
     { id: "dashboard", label: "Dashboard Control Grid", icon: "📊" },
     { id: "module", label: "Module Control Grid", icon: "⚙️" },
@@ -42,12 +62,11 @@ export default function Sidebar({ selected = "users", onSelect, collapsed = fals
               key={item.id}
               role="button"
               tabIndex={0}
-              onClick={() => onSelect && onSelect(item.id)}
-              onKeyDown={(e) => e.key === "Enter" && onSelect && onSelect(item.id)}
+              onClick={() => item.path && navigate(item.path)}
               className={`flex items-center gap-3 px-4 py-3 cursor-pointer text-sm ${
-                active
-                  ? "bg-white text-blue-700 border-l-4 border-blue-600 font-medium shadow-sm"
-                  : "text-gray-700 hover:bg-gray-50"
+              active
+              ? "bg-white text-blue-700 border-l-4 border-blue-600 font-medium shadow-sm"
+              : "text-gray-700 hover:bg-gray-50"
               }`}
             >
               <span className="text-lg">{item.icon}</span>
@@ -60,3 +79,5 @@ export default function Sidebar({ selected = "users", onSelect, collapsed = fals
     </aside>
   );
 }
+
+

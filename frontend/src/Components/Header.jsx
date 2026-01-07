@@ -25,7 +25,12 @@ export default function Header({ collapsed = false, onToggleCollapse = () => {} 
     };
   }, []);
 
-  const userName = user?.name || "User";
+  const userName =
+  user?.firstName && user?.lastName
+    ? `${user.firstName} ${user.lastName}`
+    : user?.firstName
+    ? user.firstName
+    : user?.email || "User";
 
   const handleLogout = () => {
     logout();

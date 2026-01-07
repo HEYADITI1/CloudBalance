@@ -1,30 +1,67 @@
 import { useAuth } from "../../context/AuthContext";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../Components/Header";
 import Sidebar from "../../Components/Sidebar";
 import Footer from "../../Components/Footer";
 import { createUser } from "../../api/userApi";
-
+import { getCloudAccounts } from "../../api/cloudAccountApi";
 
 export default function AddUser() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
   const [collapsed, setCollapsed] = useState(false);
 
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
     email: "",
-    role: "Admin",
-    isActive: false,
+    role: "ADMIN",
+    isActive: true,
   });
 
-  const { user } = useAuth();
+  const [accounts, setAccounts] = useState([]);
+  const [selectedAccounts, setSelectedAccounts] = useState([]);
 
+  /* ---------------- FETCH CLOUD ACCOUNTS ---------------- */
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const res = await getCloudAccounts();
+        setAccounts(res.data || []);
+      } catch (err) {
+        console.error("Failed to load cloud accounts", err);
+      }
+    };
 
+    fetchAccounts();
+  }, []);
+
+  /* ---------------- CLEAR ACCOUNTS IF ROLE CHANGES ---------------- */
+  useEffect(() => {
+    if (form.role !== "CUSTOMER") {
+      setSelectedAccounts([]);
+    }
+  }, [form.role]);
+
+  /* ---------------- HANDLERS ---------------- */
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const toggleAccount = (id) => {
+    if (user?.role !== "ADMIN") return;
+
+    setSelectedAccounts((prev) =>
+      prev.includes(id)
+        ? prev.filter((a) => a !== id)
+        : [...prev, id]
+    );
   };
 
   const handleCancel = (e) => {
@@ -36,8 +73,8 @@ export default function AddUser() {
     e.preventDefault();
 
     if (user?.role !== "ADMIN") {
-    alert("You are not authorized to create users");
-    return;
+      alert("You are not authorized to create users");
+      return;
     }
 
     const payload = {
@@ -45,7 +82,9 @@ export default function AddUser() {
       lastName: form.lastName,
       email: form.email,
       role: form.role,
-      isActive: true
+      isActive: form.isActive,
+      cloudAccountIds:
+        form.role === "CUSTOMER" ? selectedAccounts : [],
     };
 
     try {
@@ -57,22 +96,17 @@ export default function AddUser() {
     }
   };
 
-  if (user?.role === "CUSTOMER") {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-red-600 text-sm">
-        You are not authorized to create users.
-      </p>
-    </div>
-  );
-}
-
+  /* ---------------- UI ---------------- */
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header collapsed={collapsed} onToggleCollapse={() => setCollapsed((s) => !s)} />
+      <Header
+        collapsed={collapsed}
+        onToggleCollapse={() => setCollapsed((s) => !s)}
+      />
+
       <main className="flex-1 w-full px-6 py-6 pb-28">
         <div className="flex items-start gap-6">
-          <Sidebar selected="users" onSelect={() => {}} collapsed={collapsed} />
+          <Sidebar selected="users" collapsed={collapsed} />
 
           <div className="flex-1">
             <div className="w-full max-w-3xl">
@@ -91,6 +125,7 @@ export default function AddUser() {
                 <h2 className="text-lg font-semibold mb-4">Add New User</h2>
 
                 <form onSubmit={handleCreate} className="space-y-4">
+                  {/* FIRST / LAST NAME */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm text-gray-700 mb-1">
@@ -101,7 +136,6 @@ export default function AddUser() {
                         value={form.firstName}
                         onChange={onChange}
                         className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-                        placeholder="Enter first name"
                         required
                       />
                     </div>
@@ -115,27 +149,31 @@ export default function AddUser() {
                         value={form.lastName}
                         onChange={onChange}
                         className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-                        placeholder="Enter last name"
                       />
                     </div>
                   </div>
 
+                  {/* EMAIL */}
                   <div>
-                    <label className="block text-sm text-gray-700 mb-1">Email ID</label>
+                    <label className="block text-sm text-gray-700 mb-1">
+                      Email ID
+                    </label>
                     <input
                       name="email"
+                      type="email"
                       value={form.email}
                       onChange={onChange}
                       className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-                      placeholder="Enter email"
-                      type="email"
                       required
                     />
                   </div>
 
+                  {/* ROLE */}
                   <div className="grid grid-cols-2 gap-4 items-center">
                     <div>
-                      <label className="block text-sm text-gray-700 mb-1">Role</label>
+                      <label className="block text-sm text-gray-700 mb-1">
+                        Role
+                      </label>
                       <select
                         name="role"
                         value={form.role}
@@ -146,36 +184,56 @@ export default function AddUser() {
                         <option value="READ_ONLY">Read Only</option>
                         <option value="CUSTOMER">Customer</option>
                       </select>
-
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <label className="text-sm text-gray-700">
-                        Two-factor authentication
-                      </label>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          name="twoFactor"
-                          checked={form.twoFactor}
-                          onChange={onChange}
-                          className="sr-only"
-                        />
-                        <div
-                          className={`w-11 h-6 flex items-center rounded-full p-1 transition ${
-                            form.twoFactor ? "bg-blue-600" : "bg-gray-200"
-                          }`}
-                        >
-                          <div
-                            className={`bg-white w-4 h-4 rounded-full transform transition ${
-                              form.twoFactor ? "translate-x-5" : ""
-                            }`}
-                          />
-                        </div>
-                      </label>
                     </div>
                   </div>
 
+                  {/* ACCOUNTS – ONLY FOR CUSTOMER */}
+                  {form.role === "CUSTOMER" && (
+                    <div>
+                      <label className="block text-sm text-gray-700 mb-2">
+                        Accounts
+                      </label>
+
+                      <div className="border border-gray-200 rounded p-3 bg-gray-50 max-h-64 overflow-y-auto">
+                        {accounts.length === 0 ? (
+                          <p className="text-sm text-gray-500 italic">
+                            No cloud accounts available.
+                          </p>
+                        ) : (
+                          accounts.map((acc) => (
+                            <label
+                              key={acc.id}
+                              className="flex items-center gap-2 text-sm text-gray-700"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selectedAccounts.includes(acc.id)}
+                                disabled={user?.role !== "ADMIN"}
+                                onChange={() => toggleAccount(acc.id)}
+                                className="accent-blue-600"
+                              />
+
+                              <span className="font-mono text-gray-900">
+                                {acc.accountId}
+                              </span>
+
+                              <span className="text-gray-500">
+                                ({acc.accountName})
+                              </span>
+                            </label>
+                          ))
+                        )}
+                      </div>
+
+                      {user?.role !== "ADMIN" && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Only Admin users can modify account assignments.
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* BUTTONS */}
                   <div className="flex items-center gap-3 mt-4">
                     <button
                       onClick={handleCancel}
@@ -188,13 +246,13 @@ export default function AddUser() {
                       type="submit"
                       disabled={user?.role !== "ADMIN"}
                       className={`px-4 py-2 text-sm rounded ${
-                      user?.role === "ADMIN"
-                      ? "bg-blue-600 text-white hover:bg-blue-700"
-                       : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                        user?.role === "ADMIN"
+                          ? "bg-blue-600 text-white hover:bg-blue-700"
+                          : "bg-gray-300 text-gray-600 cursor-not-allowed"
                       }`}
                     >
-                     Create User
-                  </button>
+                      Create User
+                    </button>
                   </div>
                 </form>
               </div>

@@ -4,10 +4,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -15,6 +23,7 @@ public class User {
     private Long id;
 
     private String firstName;
+
     private String lastName;
 
     @Column(unique = true, nullable = false)
@@ -22,7 +31,7 @@ public class User {
 
     private String password;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
 
@@ -32,11 +41,30 @@ public class User {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public User() {}
+    /**
+     * Many-to-Many mapping with CloudAccount
+     * Supports:
+     * - Orphan accounts
+     * - Shared accounts
+     */
+    @ManyToMany
+    @JoinTable(
+            name = "user_cloud_accounts",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "cloud_account_id")
+    )
+    private Set<CloudAccount> cloudAccounts = new HashSet<>();
 
-    // IMPORTANT: This constructor must accept Role, NOT String
-    public User(String firstName, String lastName, String email,
-                String password, Role role, Boolean isActive) {
+    /**
+     * Convenience constructor
+     * IMPORTANT: Accepts Role entity (not String)
+     */
+    public User(String firstName,
+                String lastName,
+                String email,
+                String password,
+                Role role,
+                Boolean isActive) {
 
         this.firstName = firstName;
         this.lastName = lastName;
@@ -45,41 +73,4 @@ public class User {
         this.role = role;
         this.isActive = isActive;
     }
-
-    // getters and setters
-    public Long getId() { return id; }
-
-    public void setId(Long id) { this.id = id; }
-
-    public String getFirstName() { return firstName; }
-
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-
-    public String getLastName() { return lastName; }
-
-    public void setLastName(String lastName) { this.lastName = lastName; }
-
-    public String getEmail() { return email; }
-
-    public void setEmail(String email) { this.email = email; }
-
-    public String getPassword() { return password; }
-
-    public void setPassword(String password) { this.password = password; }
-
-    public Role getRole() { return role; }
-
-    public void setRole(Role role) { this.role = role; }
-
-    public Boolean getIsActive() { return isActive; }
-
-    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
-
-    public String getLastLogin() { return lastLogin; }
-
-    public void setLastLogin(String lastLogin) { this.lastLogin = lastLogin; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

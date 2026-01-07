@@ -5,6 +5,7 @@ import LoginPage from "./pages/Login/LoginPage";          // adjust path
 import UserPage from "./pages/Users/UserPage";
 import AddUser from "./pages/Users/AddUser";
 import EditUser from "./pages/Users/EditUser";
+import ClientOnboarding from "./pages/Onboarding/ClientOnboarding";
 import ProtectedRoute from "./routes/ProtectedRoutes";
 import { useAuth } from "./context/AuthContext";
 import "./api/axios"; 
@@ -45,6 +46,15 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/onboarding"
+        element={
+        <ProtectedRoute allowedRoles={["ADMIN"]}>
+          <ClientOnboarding />
+        </ProtectedRoute>
+        }
+      />
+
 
       {/* default route */}
       <Route path="*" element={<Navigate to="/login" replace />} />

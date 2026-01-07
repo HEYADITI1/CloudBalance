@@ -1,10 +1,21 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import api from "../api/axios";
 
 const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
+/**
+ * Helper: check if JWT is expired
+ */
+function isTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch (err) {
+    return true;
+  }
+}
 
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(
     JSON.parse(localStorage.getItem("user")) || null
   );
@@ -13,6 +24,18 @@ export function AuthProvider({ children }) {
     localStorage.getItem("token") || null
   );
 
+  /**
+   * Auto logout if token already expired (on app load / refresh)
+   */
+  useEffect(() => {
+    if (token && isTokenExpired(token)) {
+      logout();
+    }
+  }, []);
+
+  /**
+   * Login
+   */
   const login = async (email, password) => {
     const res = await api.post("/auth/login", {
       email,
@@ -30,6 +53,9 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  /**
+   * Logout
+   */
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -45,6 +71,9 @@ export function AuthProvider({ children }) {
   );
 }
 
+/**
+ * Hook
+ */
 export function useAuth() {
   return useContext(AuthContext);
 }

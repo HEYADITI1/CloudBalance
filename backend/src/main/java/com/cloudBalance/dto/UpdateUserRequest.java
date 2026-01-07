@@ -1,12 +1,19 @@
 package com.cloudBalance.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+import java.util.List;
+
+@Getter
+@Setter
 public class UpdateUserRequest {
+
     private String firstName;
     private String lastName;
     private String email;
-    private String role;      // ADMIN, READ_ONLY, CUSTOMER
+    private String role;
     private Boolean isActive;
+
+    private List<Long> cloudAccountIds;
 }
