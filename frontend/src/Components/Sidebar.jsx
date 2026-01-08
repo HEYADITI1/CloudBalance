@@ -1,83 +1,72 @@
-import React from "react";
-import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../context/AuthContext";
 
 export default function Sidebar({ selected, collapsed = false }) {
-
+  const navigate = useNavigate();
   const { user } = useAuth();
+
   const role = user?.role;
 
-  const navigate = useNavigate();
-
-  const menu = [
-    ...(role !== "CUSTOMER"
-      ? [
-        { id: "users", label: "Users", icon: "👥", path: "/users" },
-        {
-          id: "onboarding",
-          label: "Client Onboarding",
-          icon: "🚀",
-          path: "/onboarding",
-        },
-      ]
-      : []),
-
-    { id: "partner", label: "Partner Management", icon: "🤝" },
-    { id: "dashboard", label: "Dashboard Control Grid", icon: "📊" },
-    { id: "module", label: "Module Control Grid", icon: "⚙️" },
-    { id: "tags", label: "Tags", icon: "🏷️" },
-    { id: "permission", label: "Permission Group", icon: "🔐" },
+  /* ---------------- MENU CONFIG ---------------- */
+  const menuItems = [
+    {
+      key: "users",
+      label: "Users",
+      icon: "👥",
+      path: "/users",
+      roles: ["ADMIN", "READ_ONLY"],
+    },
+    {
+      key: "onboarding",
+      label: "Client Onboarding",
+      icon: "🚀",
+      path: "/client-onboarding",
+      roles: ["ADMIN", "READ_ONLY"],
+    },
+    {
+      key: "cost-explorer",
+      label: "Cost Explorer",
+      icon: "📊",
+      path: "/cost-explorer",
+      roles: ["ADMIN", "READ_ONLY", "CUSTOMER"],
+    },
+    {
+      key: "aws-services",
+      label: "AWS Services",
+      icon: "☁️",
+      path: "/aws-services",
+      roles: ["ADMIN", "READ_ONLY", "CUSTOMER"],
+    },
   ];
 
-  const containerClasses = collapsed ? "w-20" : "w-56";
+  /* ---------------- FILTER BY ROLE ---------------- */
+  const visibleItems = menuItems.filter((item) =>
+    item.roles.includes(role)
+  );
 
   return (
-    <aside className={`${containerClasses} bg-gray-50 border-r border-gray-200 flex flex-col transition-width duration-200 ease-in-out`}>
-      
-      <nav className="flex-1 overflow-auto">
-        {menu.map((item) => {
-          const active = item.id === selected;
+    <aside
+      className={`bg-white border border-gray-200 rounded-md p-3 ${
+        collapsed ? "w-16" : "w-60"
+      }`}
+    >
+      <nav className="space-y-1">
+        {visibleItems.map((item) => (
+          <button
+            key={item.key}
+            onClick={() => navigate(item.path)}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded text-sm transition ${
+              selected === item.key
+                ? "bg-blue-50 text-blue-600 font-medium"
+                : "text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            <span className="text-lg">{item.icon}</span>
 
-          if (collapsed) {
-            return (
-              <div
-                key={item.id}
-                role="button"
-                tabIndex={0}
-                onClick={() => onSelect && onSelect(item.id)}
-                onKeyDown={(e) => e.key === "Enter" && onSelect && onSelect(item.id)}
-                className={`flex items-center justify-center py-3 cursor-pointer text-sm ${
-                  active ? "bg-white text-blue-600" : "text-gray-600 hover:bg-gray-100"
-                }`}
-                title={item.label}
-              >
-                <span className="text-lg">{item.icon}</span>
-              </div>
-            );
-          }
-
-          return (
-            <div
-              key={item.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => item.path && navigate(item.path)}
-              className={`flex items-center gap-3 px-4 py-3 cursor-pointer text-sm ${
-              active
-              ? "bg-white text-blue-700 border-l-4 border-blue-600 font-medium shadow-sm"
-              : "text-gray-700 hover:bg-gray-50"
-              }`}
-            >
-              <span className="text-lg">{item.icon}</span>
-              <span>{item.label}</span>
-            </div>
-          );
-        })}
+            {!collapsed && <span>{item.label}</span>}
+          </button>
+        ))}
       </nav>
-      
     </aside>
   );
 }
-
-
