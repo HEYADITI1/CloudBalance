@@ -24,36 +24,35 @@ export default function UserPage() {
 
   // Fetch users from API on mount
   useEffect(() => {
-  // CUSTOMER should never fetch users
-  if (role === "CUSTOMER") {
-    setLoading(false);
-    return;
-  }
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const res = await getUsers();
-
-      const normalized = res.data.map((u) => ({
-        ...u,
-        role: typeof u.role === "object" ? u.role.name : u.role,
-        active: u.active ?? u.isActive ?? false,
-      }));
-
-      setUsers(normalized);
-      setError(null);
-    } catch (err) {
-      console.error("Failed to load users", err);
-      setError("Failed to load users");
-    } finally {
+    // CUSTOMER should never fetch users
+    if (role === "CUSTOMER") {
       setLoading(false);
+      return;
     }
-  };
 
-  fetchUsers();
-}, [role]);
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const res = await getUsers();
 
+        const normalized = res.data.map((u) => ({
+          ...u,
+          role: typeof u.role === "object" ? u.role.name : u.role,
+          active: u.active ?? u.isActive ?? false,
+        }));
+
+        setUsers(normalized);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to load users", err);
+        setError("Failed to load users");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, [role]);
 
   const totalUsersCount = users.length;
   const activeUsersCount = users.filter((u) => u.active).length;
@@ -74,9 +73,7 @@ export default function UserPage() {
 
     const updated = { ...user, active: !user.active };
     const prev = users;
-    setUsers((prevUsers) =>
-      prevUsers.map((u) => (u.id === id ? updated : u))
-    );
+    setUsers((prevUsers) => prevUsers.map((u) => (u.id === id ? updated : u)));
 
     try {
       await updateUser(id, updated);
@@ -94,7 +91,6 @@ export default function UserPage() {
     console.log("Resend invite / link to user id:", id);
   };
 
-
   const baseDisplayedUsers = useMemo(
     () => (activeTab === "active" ? users.filter((u) => u.active) : users),
     [users, activeTab]
@@ -106,7 +102,6 @@ export default function UserPage() {
     }
     return baseDisplayedUsers;
   }, [baseDisplayedUsers, selectedUserId]);
-
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -121,205 +116,204 @@ export default function UserPage() {
 
           <div className="flex-1">
             <div className="w-full">
-              
-            {/* Header row */}
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 className="text-2xl font-semibold text-gray-800">
-                  Users
-                </h1>
-              </div>
+              {/* Header row */}
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h1 className="text-2xl font-semibold text-gray-800">
+                    Users
+                  </h1>
+                </div>
 
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <span className="hidden md:inline">
-                    Two-factor Authentication
-                  </span>
-                  <button
-                    onClick={() => setTwoFactorAuth((s) => !s)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      twoFactorAuth ? "bg-blue-600" : "bg-gray-200"
-                    }`}
-                    aria-label="toggle-2fa"
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        twoFactorAuth
-                          ? "translate-x-6"
-                          : "translate-x-1"
+                <div className="flex items-center gap-4">
+                  {/* <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <span className="hidden md:inline">
+                      Two-factor Authentication
+                    </span>
+                    <button
+                      onClick={() => setTwoFactorAuth((s) => !s)}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        twoFactorAuth ? "bg-blue-600" : "bg-gray-200"
                       }`}
-                    />
-                  </button>
+                      aria-label="toggle-2fa"
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          twoFactorAuth ? "translate-x-6" : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                  </div> */}
                 </div>
               </div>
-            </div>
 
-            {/* Action buttons */}
-            <div className="flex items-center gap-3 mb-6">
-              {role === "ADMIN" && (
+              {/* Action buttons */}
+              <div className="flex items-center gap-3 mb-6">
+                {role === "ADMIN" && (
+                  <button
+                    onClick={handleAddUser}
+                    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium shadow-sm"
+                  >
+                    + Add New User
+                  </button>
+                )}
+
                 <button
-                  onClick={handleAddUser}
-                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium shadow-sm"
+                  onClick={handleResetFilters}
+                  className="inline-flex items-center gap-2 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 rounded text-sm"
                 >
-                + Add New User
+                  Reset Filters
                 </button>
-              )}
-
-              <button
-                onClick={handleResetFilters}
-                className="inline-flex items-center gap-2 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 rounded text-sm"
-              >
-                Reset Filters
-              </button>
-            </div>
-
-            {/* Loading / Error / Table */}
-            {loading ? (
-              <div className="p-6 text-center text-gray-500">
-                Loading users...
               </div>
-            ) : error ? (
-              <div className="p-6 text-center text-red-500 text-sm">
-                {error}
-              </div>
-            ) : (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 w-full overflow-hidden">
-                {/* Tabs */}
-                <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-                  <button
-                    onClick={() => {
-                      setActiveTab("active");
-                      setSelectedUserId(null);
-                    }}
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium ${
-                      activeTab === "active"
-                        ? "bg-blue-600 text-white"
-                        : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
-                    }`}
-                  >
-                    Active ({activeUsersCount})
-                  </button>
 
-                  <button
-                    onClick={() => {
-                      setActiveTab("all");
-                      setSelectedUserId(null);
-                    }}
-                    className={`px-4 py-1.5 rounded-full text-sm font-medium ${
-                      activeTab === "all"
-                        ? "bg-blue-600 text-white"
-                        : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
-                    }`}
-                  >
-                    All ({totalUsersCount})
-                  </button>
+              {/* Loading / Error / Table */}
+              {loading ? (
+                <div className="p-6 text-center text-gray-500">
+                  Loading users...
                 </div>
+              ) : error ? (
+                <div className="p-6 text-center text-red-500 text-sm">
+                  {error}
+                </div>
+              ) : (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 w-full overflow-hidden">
+                  {/* Tabs */}
+                  <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+                    <button
+                      onClick={() => {
+                        setActiveTab("active");
+                        setSelectedUserId(null);
+                      }}
+                      className={`px-4 py-1.5 rounded-full text-sm font-medium ${
+                        activeTab === "active"
+                          ? "bg-blue-600 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+                      }`}
+                    >
+                      Active ({activeUsersCount})
+                    </button>
 
-                {/* Table */}
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-white">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                          First Name
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                          Last Name
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                          Email ID
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                          Role
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                          Last Login
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
+                    <button
+                      onClick={() => {
+                        setActiveTab("all");
+                        setSelectedUserId(null);
+                      }}
+                      className={`px-4 py-1.5 rounded-full text-sm font-medium ${
+                        activeTab === "all"
+                          ? "bg-blue-600 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+                      }`}
+                    >
+                      All ({totalUsersCount})
+                    </button>
+                  </div>
 
-                    <tbody className="bg-white divide-y divide-gray-100">
-                      {displayedUsers.map((user) => (
-                        <tr
-                          key={user.id}
-                          className="bg-white hover:bg-gray-50"
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                            {user.firstName}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                            {user.lastName}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600">
-                            {user.email}
-                          </td>
-                          <td className="px-6 py-4 text-sm">
-                            <span className="inline-flex items-center px-2 py-1 text-xs bg-gray-100 border border-gray-200 rounded-md text-gray-700">
-                              {user.role}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                            {user.lastLogin || "---"}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <div className="flex items-center gap-2">
-                              {/* edit icon */}
-                              {role=="ADMIN" && (
-                                <button
-                                onClick={() => handleEdit(user.id)}
-                                title="Edit"
-                                className="p-1 rounded hover:bg-gray-50"
-                              >
-                                <svg
-                                  className="w-5 h-5 text-blue-600"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"
-                                    stroke="currentColor"
-                                    strokeWidth="1.2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                  <path
-                                    d="M20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                                    stroke="currentColor"
-                                    strokeWidth="1.2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                              </button>
-                              )}
-
-                              {/* resend button */}
-                              <button
-                                onClick={() => handleResend(user.id)}
-                                className="px-2 py-1 text-xs border rounded"
-                              >
-                                Resend
-                              </button>
-                            </div>
-                          </td>
+                  {/* Table */}
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-white">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                            First Name
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                            Last Name
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                            Email ID
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                            Role
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                            Last Login
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                            Actions
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
 
-                  {displayedUsers.length === 0 && (
-                    <div className="p-6 text-center text-gray-500">
-                      No users found.
-                    </div>
-                  )}
+                      <tbody className="bg-white divide-y divide-gray-100">
+                        {displayedUsers.map((user) => (
+                          <tr
+                            key={user.id}
+                            className="bg-white hover:bg-gray-50"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                              {user.firstName}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                              {user.lastName}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600">
+                              {user.email}
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              <span className="inline-flex items-center px-2 py-1 text-xs bg-gray-100 border border-gray-200 rounded-md text-gray-700">
+                                {user.role}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                              {user.lastLogin
+                                ? user.lastLogin.replace("T", " ").split(".")[0]
+                                : "---"}
+                            </td>
+
+                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <div className="flex items-center gap-2">
+                                {/* edit icon */}
+                                {role == "ADMIN" && (
+                                  <button
+                                    onClick={() => handleEdit(user.id)}
+                                    title="Edit"
+                                    className="p-1 rounded hover:bg-gray-50"
+                                  >
+                                    <svg
+                                      className="w-5 h-5 text-blue-600"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"
+                                        stroke="currentColor"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                      <path
+                                        d="M20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                                        stroke="currentColor"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                    </svg>
+                                  </button>
+                                )}
+
+                                {/* resend button */}
+                                <button
+                                  onClick={() => handleResend(user.id)}
+                                  className="px-2 py-1 text-xs border rounded"
+                                >
+                                  Resend
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    {displayedUsers.length === 0 && (
+                      <div className="p-6 text-center text-gray-500">
+                        No users found.
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
-                
+              )}
             </div>
           </div>
         </div>

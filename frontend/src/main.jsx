@@ -6,6 +6,7 @@ import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 import "./index.css";
 import ErrorBoundary from "./Components/ErrorBoundary";
+import { ToastContainer } from "react-toastify";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -15,6 +16,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <AuthProvider>
           <App />
         </AuthProvider>
+        <ToastContainer 
+        position="top-right"
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="light"
+        />
       </ErrorBoundary>
     </BrowserRouter>
   </React.StrictMode>

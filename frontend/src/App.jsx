@@ -9,6 +9,7 @@ import CostExplorer from "./pages/CostExplorer/CostExplorer";
 import ProtectedRoute from "./routes/ProtectedRoutes";
 import { useAuth } from "./context/AuthContext";
 import "./api/axios";
+import Onboarding from "./pages/onBoard/Onboarding";
 
 export default function App() {
   const { user } = useAuth();
@@ -59,7 +60,8 @@ export default function App() {
         path="/client-onboarding"
         element={
           <ProtectedRoute>
-            <ClientOnboarding />
+            {/* <ClientOnboarding /> */}
+            <Onboarding />
           </ProtectedRoute>
         }
       />

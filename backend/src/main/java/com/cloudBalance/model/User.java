@@ -37,7 +37,7 @@ public class User {
 
     private Boolean isActive = true;
 
-    private String lastLogin;
+    private LocalDateTime lastLogin;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 

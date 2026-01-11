@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -44,6 +45,8 @@ public class AuthService {
                 user.getEmail(),
                 user.getRole().getName()
         );
+        user.setLastLogin(LocalDateTime.now());
+        userRepo.save(user);
 
         // 5. Successful login response
         return Map.of(

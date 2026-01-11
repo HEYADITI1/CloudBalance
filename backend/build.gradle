@@ -17,6 +17,11 @@ repositories {
     mavenCentral()
 }
 
+bootRun {
+    jvmArgs = ["--add-opens=java.base/java.nio=ALL-UNNAMED"]
+}
+
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
@@ -32,6 +37,11 @@ dependencies {
 
     // MySQL Connector
     runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Snowflake
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'net.snowflake:snowflake-jdbc:3.15.1'
+
 }
 
 tasks.named('test') {
