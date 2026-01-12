@@ -38,23 +38,24 @@ public class CostExplorerRepository {
         }
 
         StringBuilder sql = new StringBuilder("""
-        SELECT %s AS GROUP_KEY, SUM(COST) AS TOTAL_COST
-        FROM COSTREPORT
-        WHERE BILL_DATE BETWEEN ? AND ?
-    """.formatted(groupBy));
+    SELECT 
+        TO_CHAR(BILL_DATE, 'Mon YYYY') AS MONTH,
+        %s AS GROUP_KEY,
+        SUM(COST) AS TOTAL_COST
+    FROM COSTREPORT
+    WHERE BILL_DATE BETWEEN ? AND ?
+""".formatted(groupBy));
+
 
         List<Object> params = new ArrayList<>();
         params.add(java.sql.Date.valueOf(from));
         params.add(java.sql.Date.valueOf(to));
 
         for (Map.Entry<String, String> entry : filters.entrySet()) {
-
             String key = entry.getKey().toUpperCase();
 
             if (allowedGroupBy.contains(key)) {
-
                 String[] values = entry.getValue().split(",");
-
                 sql.append(" AND ").append(key).append(" IN (");
 
                 for (int i = 0; i < values.length; i++) {
@@ -67,18 +68,23 @@ public class CostExplorerRepository {
             }
         }
 
-        sql.append(" GROUP BY ").append(groupBy);
-        sql.append(" ORDER BY TOTAL_COST DESC");
+        sql.append(" GROUP BY MONTH, ").append(groupBy);
+        sql.append(" ORDER BY MONTH");
+
 
         return jdbcTemplate.query(
                 sql.toString(),
                 params.toArray(),
                 (rs, i) -> new ServiceCostDTO(
                         rs.getString("GROUP_KEY"),
+                        rs.getString("MONTH"),
                         rs.getDouble("TOTAL_COST")
                 )
+
         );
     }
+
+
 
 
 }

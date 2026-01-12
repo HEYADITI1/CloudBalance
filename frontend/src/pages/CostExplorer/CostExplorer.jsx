@@ -14,11 +14,11 @@ export default function CostExplorer() {
         onToggleCollapse={() => setCollapsed(!collapsed)}
       />
 
-      <main className="flex-1 px-6 py-6">
-        <div className="flex gap-6">
+      <main className="flex-1 px-6 py-6 flex">
+        <div className="flex gap-6 w-full">
           <Sidebar selected="cost-explorer" collapsed={collapsed} />
 
-          <div className="flex-1">
+          <div className="flex-1 min-w-0 w-full">
             <CostExplorerContainer />
           </div>
         </div>

@@ -36,13 +36,9 @@ export default function CostExplorerContainer() {
       const res = await fetch(
         `http://localhost:8080/api/cost/explorer?${params.toString()}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      if (!res.ok) throw new Error("Failed to fetch data");
 
       const json = await res.json();
       setData(json);
@@ -53,44 +49,44 @@ export default function CostExplorerContainer() {
     }
   };
 
-  const applyFilters = (newFilters) => {
-    setFilters(newFilters);
-  };
-
-  const resetFilters = () => {
-    setFilters({});
-  };
-
   return (
-    <div className="relative flex gap-6">
-      <div className="flex-1 min-w-0">
-        <CostExplorerHeader
-          groupBy={groupBy}
-          setGroupBy={setGroupBy}
-          onToggleFilters={() => setShowFilters(!showFilters)}
-          showFilters={showFilters}
-        />
+    <div>
+      {/* HEADER FULL WIDTH */}
+      <CostExplorerHeader
+        groupBy={groupBy}
+        setGroupBy={setGroupBy}
+        onToggleFilters={() => setShowFilters(!showFilters)}
+        showFilters={showFilters}
+      />
 
-        <CostExplorerBody
-          groupBy={groupBy}
-          data={data}
-          loading={loading}
-          error={error}
-          fromDate={fromDate}
-          toDate={toDate}
-          setFromDate={setFromDate}
-          setToDate={setToDate}
-        />
+      {/* BODY + FILTER ROW */}
+      <div className="flex gap-6 w-full">
+        {/* BODY */}
+        <div className="flex-1 w-full min-w-0">
+          <CostExplorerBody
+            groupBy={groupBy}
+            data={data}
+            loading={loading}
+            error={error}
+            fromDate={fromDate}
+            toDate={toDate}
+            setFromDate={setFromDate}
+            setToDate={setToDate}
+          />
+        </div>
+
+        {/* FILTER */}
+        {showFilters && (
+          <div className="w-72 flex-shrink-0">
+            <FilterPanel
+              filters={filters}
+              onApply={setFilters}
+              onReset={() => setFilters({})}
+              onClose={() => setShowFilters(false)}
+            />
+          </div>
+        )}
       </div>
-
-      {showFilters && (
-        <FilterPanel
-          filters={filters}
-          onApply={applyFilters}
-          onReset={resetFilters}
-          onClose={() => setShowFilters(false)}
-        />
-      )}
     </div>
   );
 }

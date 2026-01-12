@@ -1,14 +1,17 @@
 package com.cloudBalance.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ServiceCostDTO {
-    private String service;
+
+    private String month;
+    private String groupKey;
     private Double cost;
-
-    public ServiceCostDTO(String service, Double cost) {
-        this.service = service;
-        this.cost = cost;
-    }
-
-    public String getService() { return service; }
-    public Double getCost() { return cost; }
 }
