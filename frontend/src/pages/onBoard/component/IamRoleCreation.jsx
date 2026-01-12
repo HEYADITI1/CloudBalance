@@ -6,13 +6,11 @@ import img from "../../../assets/onbording/createiam.png";
 import Input from "./Input.jsx"
 import { toast } from "react-toastify";
 
-const IamRoleCreation = () => {
+const IamRoleCreation = ({account, setAccount}) => {
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     toast.success("text copied")
   };
-
-  const[account, setAccount] = useState({});
 
   const handleChange =(e) =>{
     const {name, value} = e.target;
@@ -120,19 +118,19 @@ const IamRoleCreation = () => {
               <Input 
                 label="Account ID"
                 type="text"
-                name="id"
+                name="accountId"
                 placeholder="Enter Account ID"
-                value={account.id}
+                value={account.accountId}
                 onChange={handleChange}
-                readOnly={true}
+                readOnly={false}
               />
             </div>
             <Input 
               label="Account Name"
               type="text"
-              name="name"
+              name="accountName"
               placeholder="Enter Account Name"
-              value={account.name}
+              value={account.accountName}
               onChange={handleChange}
             />
           </div>

@@ -27,11 +27,11 @@ public class CloudAccount {
     @Column(nullable = false)
     private String arn;
 
-    @Column(nullable = false)
-    private String provider;
-
-    @Column(name = "is_active")
-    private Boolean isActive = true;
+//    @Column(nullable = false)
+//    private String provider;
+//
+//    @Column(name = "is_active")
+//    private Boolean isActive = true;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 }

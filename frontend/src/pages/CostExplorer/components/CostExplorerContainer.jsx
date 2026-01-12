@@ -53,17 +53,22 @@ export default function CostExplorerContainer() {
     }
   };
 
+  const applyFilters = (newFilters) => {
+    setFilters(newFilters);
+  };
+
+  const resetFilters = () => {
+    setFilters({});
+  };
+
   return (
     <div className="relative flex gap-6">
       <div className="flex-1 min-w-0">
         <CostExplorerHeader
           groupBy={groupBy}
           setGroupBy={setGroupBy}
-          fromDate={fromDate}
-          toDate={toDate}
-          setFromDate={setFromDate}
-          setToDate={setToDate}
           onToggleFilters={() => setShowFilters(!showFilters)}
+          showFilters={showFilters}
         />
 
         <CostExplorerBody
@@ -71,13 +76,18 @@ export default function CostExplorerContainer() {
           data={data}
           loading={loading}
           error={error}
+          fromDate={fromDate}
+          toDate={toDate}
+          setFromDate={setFromDate}
+          setToDate={setToDate}
         />
       </div>
 
       {showFilters && (
         <FilterPanel
           filters={filters}
-          setFilters={setFilters}
+          onApply={applyFilters}
+          onReset={resetFilters}
           onClose={() => setShowFilters(false)}
         />
       )}
