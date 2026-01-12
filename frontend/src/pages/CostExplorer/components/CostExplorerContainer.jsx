@@ -6,7 +6,7 @@ import FilterPanel from "./FilterPanel";
 export default function CostExplorerContainer() {
   const [groupBy, setGroupBy] = useState("SERVICE");
   const [fromDate, setFromDate] = useState("2025-01-01");
-  const [toDate, setToDate] = useState("2025-01-03");
+  const [toDate, setToDate] = useState("2025-06-30");
 
   const [filters, setFilters] = useState({});
   const [showFilters, setShowFilters] = useState(true);
