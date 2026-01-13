@@ -9,15 +9,13 @@ import { getUsers, updateUser } from "../../api/userApi";
 export default function UserPage() {
   const navigate = useNavigate();
 
-  const [collapsed, setCollapsed] = useState(false);
-
   const [users, setUsers] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 🔐 Redux auth
+  // Redux auth
   const user = useSelector((state) => state.auth.user);
   const role = user?.role;
 
@@ -105,14 +103,11 @@ export default function UserPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header
-        collapsed={collapsed}
-        onToggleCollapse={() => setCollapsed((s) => !s)}
-      />
+      <Header />
 
       <main className="flex-1 w-full p-6 pb-28">
         <div className="flex gap-6 h-full">
-          <Sidebar selected="users" collapsed={collapsed} />
+          <Sidebar selected="users" />
 
           <div className="flex-1">
             <div className="w-full">

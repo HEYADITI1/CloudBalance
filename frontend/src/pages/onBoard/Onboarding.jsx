@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 import { createCloudAccount } from "../../api/cloudAccountApi";
 
 export default function Onboarding() {
-  const [collapsed, setCollapsed] = useState(false);
   const [page, setPage] = useState(1);
   const [account, setAccount] = useState({});
 
@@ -38,17 +37,14 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* HEADER */}
-      <Header
-        collapsed={collapsed}
-        onToggleCollapse={() => setCollapsed(!collapsed)}
-      />
+      <Header />
 
       {/* MAIN BODY */}
       <main className="flex-1 p-6 pb-24">
         <div className="flex gap-6 h-full">
           {/* SIDEBAR */}
           <div className="h-[calc(100vh-124px)]">
-            <Sidebar selected="onboarding" collapsed={collapsed} />
+            <Sidebar selected="users" />
           </div>
           {/* CONTENT */}
           <div className="flex-1 bg-white border border-gray-200 rounded-md p-6 overflow-y-auto">

@@ -1,11 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-export default function Sidebar({ selected, collapsed = false }) {
+export default function Sidebar({ selected }) {
   const navigate = useNavigate();
 
   const user = useSelector(state => state.auth.user);
   const role = user?.role;
+
+  const collapsed = useSelector(state => state.layout.sidebarCollapsed);
+
 
   if (!role) return null; // ⬅ prevents flicker
 

@@ -2,11 +2,14 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout as reduxLogout } from "../store/authSlice";
+import { toggleSidebar } from "../store/layoutSlice";
 
-export default function Header({ collapsed = false, onToggleCollapse = () => {} }) {
+
+export default function Header() {
   const [open, setOpen] = useState(false);
   const ddRef = useRef(null);
 
+  const collapsed = useSelector(state => state.layout.sidebarCollapsed);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -51,7 +54,7 @@ export default function Header({ collapsed = false, onToggleCollapse = () => {} 
           <img src="/CKlogo.png" className="h-8 w-auto object-contain" alt="CK Logo" />
 
           <button
-            onClick={onToggleCollapse}
+            onClick={() => dispatch(toggleSidebar())}
             className="p-2 rounded hover:bg-gray-100 text-gray-600"
             title="Toggle Sidebar"
           >

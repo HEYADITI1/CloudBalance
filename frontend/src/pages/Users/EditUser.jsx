@@ -16,8 +16,6 @@ export default function EditUser() {
   // 🔐 Redux auth
   const user = useSelector(state => state.auth.user);
 
-  const [collapsed, setCollapsed] = useState(false);
-
   const [accounts, setAccounts] = useState([]);
   const [selectedAccounts, setSelectedAccounts] = useState([]);
 
@@ -145,14 +143,11 @@ export default function EditUser() {
 
   return (
     <div className="bg-gray-50 flex flex-col">
-      <Header
-        collapsed={collapsed}
-        onToggleCollapse={() => setCollapsed(s => !s)}
-      />
+      <Header />
 
       <main className="flex-1 w-full p-6 pb-28">
         <div className="flex gap-6">
-          <Sidebar selected="users" collapsed={collapsed} />
+          <Sidebar selected="users" />
 
           <div className="flex-1">
             <div className="w-full max-w-3xl">

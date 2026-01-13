@@ -13,8 +13,6 @@ export default function AddUser() {
   // 🔐 Redux auth
   const user = useSelector(state => state.auth.user);
 
-  const [collapsed, setCollapsed] = useState(false);
-
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -105,14 +103,11 @@ export default function AddUser() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header
-        collapsed={collapsed}
-        onToggleCollapse={() => setCollapsed((s) => !s)}
-      />
+      <Header />
 
       <main className="flex-1 w-full p-6 pb-28">
         <div className="flex gap-6">
-          <Sidebar selected="users" collapsed={collapsed} />
+          <Sidebar selected="users" />
 
           <div className="flex-1">
             <div className="w-full max-w-3xl">
