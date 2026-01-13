@@ -1,6 +1,6 @@
-import { useAuth } from "../../context/AuthContext";
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Header from "../../Components/Header";
 import Sidebar from "../../Components/Sidebar";
 import Footer from "../../Components/Footer";
@@ -17,12 +17,14 @@ export default function UserPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { user } = useAuth();
+  // 🔐 Redux auth
+  const user = useSelector((state) => state.auth.user);
   const role = user?.role;
 
-  // Fetch users from API on mount
+  // Fetch users from API
   useEffect(() => {
-    // CUSTOMER should never fetch users
+    if (!role) return;
+
     if (role === "CUSTOMER") {
       setLoading(false);
       return;
@@ -55,7 +57,6 @@ export default function UserPage() {
   const totalUsersCount = users.length;
   const activeUsersCount = users.filter((u) => u.active).length;
 
-  // Handlers
   const handleAddUser = () => {
     navigate("/users/add");
   };
@@ -66,12 +67,13 @@ export default function UserPage() {
   };
 
   const handleToggleActive = async (id) => {
-    const user = users.find((u) => u.id === id);
-    if (!user) return;
+    const u = users.find((u) => u.id === id);
+    if (!u) return;
 
-    const updated = { ...user, active: !user.active };
+    const updated = { ...u, active: !u.active };
     const prev = users;
-    setUsers((prevUsers) => prevUsers.map((u) => (u.id === id ? updated : u)));
+
+    setUsers((prevUsers) => prevUsers.map((x) => (x.id === id ? updated : x)));
 
     try {
       await updateUser(id, updated);
@@ -114,37 +116,12 @@ export default function UserPage() {
 
           <div className="flex-1">
             <div className="w-full">
-              {/* Header row */}
+              {/* Header */}
               <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h1 className="text-2xl font-semibold text-gray-800">
-                    Users
-                  </h1>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  {/* <div className="flex items-center gap-3 text-sm text-gray-600">
-                    <span className="hidden md:inline">
-                      Two-factor Authentication
-                    </span>
-                    <button
-                      onClick={() => setTwoFactorAuth((s) => !s)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        twoFactorAuth ? "bg-blue-600" : "bg-gray-200"
-                      }`}
-                      aria-label="toggle-2fa"
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          twoFactorAuth ? "translate-x-6" : "translate-x-1"
-                        }`}
-                      />
-                    </button>
-                  </div> */}
-                </div>
+                <h1 className="text-2xl font-semibold text-gray-800">Users</h1>
               </div>
 
-              {/* Action buttons */}
+              {/* Buttons */}
               <div className="flex items-center gap-3 mb-6">
                 {role === "ADMIN" && (
                   <button
@@ -163,7 +140,7 @@ export default function UserPage() {
                 </button>
               </div>
 
-              {/* Loading / Error / Table */}
+              {/* Content */}
               {loading ? (
                 <div className="p-6 text-center text-gray-500">
                   Loading users...
@@ -232,37 +209,25 @@ export default function UserPage() {
                       </thead>
 
                       <tbody className="bg-white divide-y divide-gray-100">
-                        {displayedUsers.map((user) => (
-                          <tr
-                            key={user.id}
-                            className="bg-white hover:bg-gray-50"
-                          >
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                              {user.firstName}
+                        {displayedUsers.map((u) => (
+                          <tr key={u.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 text-sm">{u.firstName}</td>
+                            <td className="px-6 py-4 text-sm">{u.lastName}</td>
+                            <td className="px-6 py-4 text-sm text-blue-600">
+                              {u.email}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                              {user.lastName}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600">
-                              {user.email}
-                            </td>
+                            <td className="px-6 py-4 text-sm">{u.role}</td>
                             <td className="px-6 py-4 text-sm">
-                              <span className="inline-flex items-center px-2 py-1 text-xs bg-gray-100 border border-gray-200 rounded-md text-gray-700">
-                                {user.role}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                              {user.lastLogin
-                                ? user.lastLogin.replace("T", " ").split(".")[0]
+                              {u.lastLogin
+                                ? u.lastLogin.replace("T", " ").split(".")[0]
                                 : "---"}
                             </td>
 
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-6 py-4 text-sm">
                               <div className="flex items-center gap-2">
-                                {/* edit icon */}
-                                {role == "ADMIN" && (
+                                {role === "ADMIN" && (
                                   <button
-                                    onClick={() => handleEdit(user.id)}
+                                    onClick={() => handleEdit(u.id)}
                                     title="Edit"
                                     className="p-1 rounded hover:bg-gray-50"
                                   >
@@ -270,7 +235,6 @@ export default function UserPage() {
                                       className="w-5 h-5 text-blue-600"
                                       viewBox="0 0 24 24"
                                       fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
                                     >
                                       <path
                                         d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"
@@ -289,14 +253,6 @@ export default function UserPage() {
                                     </svg>
                                   </button>
                                 )}
-
-                                {/* resend button */}
-                                <button
-                                  onClick={() => handleResend(user.id)}
-                                  className="px-2 py-1 text-xs border rounded"
-                                >
-                                  Resend
-                                </button>
                               </div>
                             </td>
                           </tr>

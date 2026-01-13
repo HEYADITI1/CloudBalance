@@ -1,18 +1,21 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+
 import LoginPage from "./pages/Login/LoginPage";
 import UserPage from "./pages/Users/UserPage";
 import AddUser from "./pages/Users/AddUser";
 import EditUser from "./pages/Users/EditUser";
 import CostExplorer from "./pages/CostExplorer/CostExplorer";
-import NotAuthorized from "./pages/NotAuthorized"
+import NotAuthorized from "./pages/NotAuthorized";
 import ProtectedRoute from "./routes/ProtectedRoutes";
-import { useAuth } from "./context/AuthContext";
-import "./api/axios";
 import Onboarding from "./pages/onBoard/Onboarding";
 
+import "./api/axios";
+
 export default function App() {
-  const { user } = useAuth();
+  const user = useSelector(state => state.auth.user);
+  const token = useSelector(state => state.auth.token);
 
   return (
     <Routes>
@@ -23,7 +26,7 @@ export default function App() {
       {/* Login */}
       <Route
         path="/login"
-        element={user ? <Navigate to="/cost-explorer" replace /> : <LoginPage />}
+        element={token ? <Navigate to="/cost-explorer" replace /> : <LoginPage />}
       />
 
       {/* Protected routes */}
@@ -82,7 +85,6 @@ export default function App() {
       />
 
       <Route path="/not-authorized" element={<NotAuthorized />} />
-
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/login" replace />} />

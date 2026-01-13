@@ -1,12 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useSelector, useDispatch } from "react-redux";
+import { logout as reduxLogout } from "../store/authSlice";
 
 export default function Header({ collapsed = false, onToggleCollapse = () => {} }) {
   const [open, setOpen] = useState(false);
   const ddRef = useRef(null);
-  const { user, logout } = useAuth();
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const user = useSelector(state => state.auth.user);
 
   const moduleItems = ["CK Lens", "CK Tuner"];
 
@@ -26,21 +30,23 @@ export default function Header({ collapsed = false, onToggleCollapse = () => {} 
   }, []);
 
   const userName =
-  user?.firstName && user?.lastName
-    ? `${user.firstName} ${user.lastName}`
-    : user?.firstName
-    ? user.firstName
-    : user?.email || "User";
+    user?.firstName && user?.lastName
+      ? `${user.firstName} ${user.lastName}`
+      : user?.firstName
+      ? user.firstName
+      : user?.email || "User";
 
   const handleLogout = () => {
-    logout();
+    dispatch(reduxLogout());
+    // localStorage.removeItem("token");
+    // localStorage.removeItem("user");
     navigate("/login", { replace: true });
   };
 
   return (
     <header className="w-full bg-white border-b border-gray-200">
       <div className="flex items-center justify-between px-6 py-3">
-        {/* LEFT: logo + burger + module dropdown */}
+        {/* LEFT */}
         <div className="flex items-center gap-4">
           <img src="/CKlogo.png" className="h-8 w-auto object-contain" alt="CK Logo" />
 
@@ -63,7 +69,7 @@ export default function Header({ collapsed = false, onToggleCollapse = () => {} 
           <div className="relative" ref={ddRef}>
             <div
               className="flex items-center gap-1 text-gray-700 text-sm cursor-pointer hover:text-gray-900"
-              onClick={() => setOpen((prev) => !prev)}
+              onClick={() => setOpen(prev => !prev)}
             >
               <span>Module</span>
               <svg
@@ -93,7 +99,7 @@ export default function Header({ collapsed = false, onToggleCollapse = () => {} 
           </div>
         </div>
 
-        {/* RIGHT: user info + Logout */}
+        {/* RIGHT */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold">

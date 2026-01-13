@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useSelector } from "react-redux";
 
 import Header from "../../Components/Header";
 import Sidebar from "../../Components/Sidebar";
@@ -10,9 +10,11 @@ import { getUserById, updateUser } from "../../api/userApi";
 import { getCloudAccounts } from "../../api/cloudAccountApi";
 
 export default function EditUser() {
-  const { user } = useAuth(); // logged-in user
   const navigate = useNavigate();
   const { id } = useParams();
+
+  // 🔐 Redux auth
+  const user = useSelector(state => state.auth.user);
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -41,12 +43,13 @@ export default function EditUser() {
           firstName: u.firstName,
           lastName: u.lastName,
           email: u.email,
+          password: "",
           role: u.role?.name,
           isActive: u.isActive,
         });
 
         setSelectedAccounts(
-          u.cloudAccounts ? u.cloudAccounts.map((a) => a.id) : []
+          u.cloudAccounts ? u.cloudAccounts.map(a => a.id) : []
         );
       } catch (err) {
         console.error(err);
@@ -84,7 +87,7 @@ export default function EditUser() {
   /* ---------------- HANDLERS ---------------- */
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((prev) => ({
+    setForm(prev => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
@@ -93,9 +96,9 @@ export default function EditUser() {
   const toggleAccount = (accountId) => {
     if (user?.role !== "ADMIN") return;
 
-    setSelectedAccounts((prev) =>
+    setSelectedAccounts(prev =>
       prev.includes(accountId)
-        ? prev.filter((id) => id !== accountId)
+        ? prev.filter(id => id !== accountId)
         : [...prev, accountId]
     );
   };
@@ -140,19 +143,17 @@ export default function EditUser() {
     );
   }
 
-  /* ---------------- UI ---------------- */
   return (
-    <div className=" bg-gray-50 flex flex-col">
+    <div className="bg-gray-50 flex flex-col">
       <Header
         collapsed={collapsed}
-        onToggleCollapse={() => setCollapsed((s) => !s)}
+        onToggleCollapse={() => setCollapsed(s => !s)}
       />
 
       <main className="flex-1 w-full p-6 pb-28">
         <div className="flex gap-6">
-          {/* <div className="h-[calc(100vh-120px)]"> */}
-            <Sidebar selected="users" collapsed={collapsed} />
-          {/* </div> */}
+          <Sidebar selected="users" collapsed={collapsed} />
+
           <div className="flex-1">
             <div className="w-full max-w-3xl">
               <div className="text-sm text-gray-500 mb-4">
@@ -170,182 +171,79 @@ export default function EditUser() {
                 <h2 className="text-lg font-semibold mb-4">Edit User</h2>
 
                 <form onSubmit={handleUpdate} className="space-y-4">
-                  {/* FIRST / LAST NAME */}
+
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm text-gray-700 mb-1">
-                        First Name
-                      </label>
-                      <input
-                        name="firstName"
-                        value={form.firstName}
-                        onChange={onChange}
-                        disabled={user?.role !== "ADMIN"}
-                        className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm text-gray-700 mb-1">
-                        Last Name
-                      </label>
-                      <input
-                        name="lastName"
-                        value={form.lastName}
-                        onChange={onChange}
-                        disabled={user?.role !== "ADMIN"}
-                        className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-                      />
-                    </div>
-                  </div>
-
-                  {/* EMAIL */}
-                  <div>
-                    <label className="block text-sm text-gray-700 mb-1">
-                      Email ID
-                    </label>
                     <input
-                      name="email"
-                      type="email"
-                      value={form.email}
+                      name="firstName"
+                      value={form.firstName}
                       onChange={onChange}
                       disabled={user?.role !== "ADMIN"}
-                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
+                      className="border p-2 rounded"
                     />
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <label className="block text-sm text-gray-700 mb-1">
-                      New Password (optional)
-                    </label>
                     <input
-                      type="password"
-                      name="password"
-                      value={form.password}
+                      name="lastName"
+                      value={form.lastName}
                       onChange={onChange}
-                      placeholder="Leave blank to keep existing password"
-                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
+                      disabled={user?.role !== "ADMIN"}
+                      className="border p-2 rounded"
                     />
                   </div>
 
-                  {/* ROLE */}
-                  <div className="grid grid-cols-2 gap-4 items-center">
-                    {/* ROLE DROPDOWN */}
-                    <div>
-                      <label className="block text-sm text-gray-700 mb-1">
-                        Role
-                      </label>
-                      <select
-                        name="role"
-                        value={form.role}
-                        onChange={onChange}
-                        disabled={user?.role !== "ADMIN"}
-                        className="w-full border border-gray-200 rounded px-3 py-2 text-sm bg-white"
-                      >
-                        <option value="ADMIN">Admin</option>
-                        <option value="READ_ONLY">Read Only</option>
-                        <option value="CUSTOMER">Customer</option>
-                      </select>
-                    </div>
+                  <input
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={onChange}
+                    disabled={user?.role !== "ADMIN"}
+                    className="border p-2 rounded w-full"
+                  />
 
-                    {/* ACTIVE TOGGLE */}
-                    <div className="flex items-center gap-3">
-                      <label className="text-sm text-gray-700">Active</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={form.password}
+                    onChange={onChange}
+                    placeholder="Leave blank to keep existing password"
+                    className="border p-2 rounded w-full"
+                  />
 
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          name="isActive"
-                          checked={form.isActive}
-                          onChange={onChange}
-                          disabled={user?.role !== "ADMIN"}
-                          className="sr-only"
-                        />
+                  <select
+                    name="role"
+                    value={form.role}
+                    onChange={onChange}
+                    disabled={user?.role !== "ADMIN"}
+                    className="border p-2 rounded w-full"
+                  >
+                    <option value="ADMIN">Admin</option>
+                    <option value="READ_ONLY">Read Only</option>
+                    <option value="CUSTOMER">Customer</option>
+                  </select>
 
-                        <div
-                          className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${
-                            form.isActive ? "bg-blue-600" : "bg-gray-200"
-                          } ${
-                            user?.role !== "ADMIN"
-                              ? "opacity-60 cursor-not-allowed"
-                              : ""
-                          }`}
-                        >
-                          <div
-                            className={`bg-white w-4 h-4 rounded-full shadow-sm transform transition-transform ${
-                              form.isActive ? "translate-x-5" : ""
-                            }`}
-                          />
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* ACCOUNTS – ONLY FOR CUSTOMER */}
                   {form.role === "CUSTOMER" && (
-                    <div>
-                      <label className="block text-sm text-gray-700 mb-3">
-                        Accounts
-                      </label>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        {/* ALL ACCOUNTS */}
-                        <div className="border border-gray-200 rounded p-3 bg-gray-50 max-h-64 overflow-y-auto">
-                          <h4 className="text-sm font-medium mb-2">
-                            All Accounts
-                          </h4>
-
-                          {accounts.map((acc) => (
-                            <label
-                              key={acc.id}
-                              className="flex items-center gap-2 text-sm"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedAccounts.includes(acc.id)}
-                                disabled={user?.role !== "ADMIN"}
-                                onChange={() => toggleAccount(acc.id)}
-                              />
-                              <span className="font-mono">{acc.accountId}</span>
-                              <span className="text-gray-500">
-                                ({acc.accountName})
-                              </span>
-                            </label>
-                          ))}
-                        </div>
-
-                        {/* LINKED ACCOUNTS */}
-                        <div className="border border-gray-200 rounded p-3">
-                          <h4 className="text-sm font-medium mb-2">
-                            Linked Accounts
-                          </h4>
-
-                          {accounts
-                            .filter((acc) => selectedAccounts.includes(acc.id))
-                            .map((acc) => (
-                              <div key={acc.id} className="text-sm">
-                                ✓ {acc.accountId} ({acc.accountName})
-                              </div>
-                            ))}
-                        </div>
-                      </div>
+                    <div className="border p-3 rounded bg-gray-50">
+                      {accounts.map(acc => (
+                        <label key={acc.id} className="flex gap-2 text-sm">
+                          <input
+                            type="checkbox"
+                            checked={selectedAccounts.includes(acc.id)}
+                            disabled={user?.role !== "ADMIN"}
+                            onChange={() => toggleAccount(acc.id)}
+                          />
+                          {acc.accountId} ({acc.accountName})
+                        </label>
+                      ))}
                     </div>
                   )}
 
-                  {/* BUTTONS */}
-                  <div className="flex items-center gap-3 mt-4">
-                    <button
-                      onClick={handleCancel}
-                      className="px-4 py-2 text-sm bg-white border border-gray-200 rounded"
-                    >
+                  <div className="flex gap-3">
+                    <button onClick={handleCancel} className="border px-4 py-2 rounded">
                       Cancel
                     </button>
 
                     <button
                       type="submit"
                       disabled={user?.role !== "ADMIN"}
-                      className={`px-4 py-2 text-sm rounded ${
+                      className={`px-4 py-2 rounded ${
                         user?.role === "ADMIN"
                           ? "bg-blue-600 text-white"
                           : "bg-gray-300 text-gray-600"
@@ -354,6 +252,7 @@ export default function EditUser() {
                       Save Changes
                     </button>
                   </div>
+
                 </form>
               </div>
             </div>

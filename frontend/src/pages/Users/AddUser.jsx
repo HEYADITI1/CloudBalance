@@ -1,6 +1,6 @@
-import { useAuth } from "../../context/AuthContext";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Header from "../../Components/Header";
 import Sidebar from "../../Components/Sidebar";
 import Footer from "../../Components/Footer";
@@ -9,7 +9,9 @@ import { getCloudAccounts } from "../../api/cloudAccountApi";
 
 export default function AddUser() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+
+  // 🔐 Redux auth
+  const user = useSelector(state => state.auth.user);
 
   const [collapsed, setCollapsed] = useState(false);
 
@@ -101,7 +103,6 @@ export default function AddUser() {
     }
   };
 
-  /* ---------------- UI ---------------- */
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header
@@ -130,164 +131,60 @@ export default function AddUser() {
                 <h2 className="text-lg font-semibold mb-4">Add New User</h2>
 
                 <form onSubmit={handleCreate} className="space-y-4">
+
                   {/* FIRST / LAST NAME */}
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm text-gray-700 mb-1">
-                        First Name
-                      </label>
-                      <input
-                        name="firstName"
-                        value={form.firstName}
-                        onChange={onChange}
-                        className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm text-gray-700 mb-1">
-                        Last Name
-                      </label>
-                      <input
-                        name="lastName"
-                        value={form.lastName}
-                        onChange={onChange}
-                        className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-                      />
-                    </div>
+                    <input name="firstName" value={form.firstName} onChange={onChange} required className="border p-2 rounded" placeholder="First Name" />
+                    <input name="lastName" value={form.lastName} onChange={onChange} className="border p-2 rounded" placeholder="Last Name" />
                   </div>
 
                   {/* EMAIL */}
-                  <div>
-                    <label className="block text-sm text-gray-700 mb-1">
-                      Email ID
-                    </label>
-                    <input
-                      name="email"
-                      type="email"
-                      value={form.email}
-                      onChange={onChange}
-                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-                      required
-                    />
-                  </div>
+                  <input name="email" type="email" value={form.email} onChange={onChange} required className="border p-2 rounded w-full" placeholder="Email" />
 
-                  {/* Password */}
-                  <div>
-                    <label className="block text-sm text-gray-700 mb-1">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      name="password"
-                      value={form.password}
-                      onChange={onChange}
-                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm text-gray-700 mb-1">
-                      Confirm Password
-                    </label>
-                    <input
-                      type="password"
-                      name="confirmPassword"
-                      value={form.confirmPassword}
-                      onChange={onChange}
-                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-                      required
-                    />
-                  </div>
+                  {/* PASSWORD */}
+                  <input name="password" type="password" value={form.password} onChange={onChange} required className="border p-2 rounded w-full" placeholder="Password" />
+                  <input name="confirmPassword" type="password" value={form.confirmPassword} onChange={onChange} required className="border p-2 rounded w-full" placeholder="Confirm Password" />
 
                   {/* ROLE */}
-                  <div className="grid grid-cols-2 gap-4 items-center">
-                    <div>
-                      <label className="block text-sm text-gray-700 mb-1">
-                        Role
-                      </label>
-                      <select
-                        name="role"
-                        value={form.role}
-                        onChange={onChange}
-                        className="w-full border border-gray-200 rounded px-3 py-2 text-sm bg-white"
-                      >
-                        <option value="ADMIN">Admin</option>
-                        <option value="READ_ONLY">Read Only</option>
-                        <option value="CUSTOMER">Customer</option>
-                      </select>
-                    </div>
-                  </div>
+                  <select name="role" value={form.role} onChange={onChange} className="border p-2 rounded w-full">
+                    <option value="ADMIN">Admin</option>
+                    <option value="READ_ONLY">Read Only</option>
+                    <option value="CUSTOMER">Customer</option>
+                  </select>
 
-                  {/* ACCOUNTS – ONLY FOR CUSTOMER */}
+                  {/* ACCOUNTS */}
                   {form.role === "CUSTOMER" && (
-                    <div>
-                      <label className="block text-sm text-gray-700 mb-2">
-                        Accounts
-                      </label>
-
-                      <div className="border border-gray-200 rounded p-3 bg-gray-50 max-h-64 overflow-y-auto">
-                        {accounts.length === 0 ? (
-                          <p className="text-sm text-gray-500 italic">
-                            No cloud accounts available.
-                          </p>
-                        ) : (
-                          accounts.map((acc) => (
-                            <label
-                              key={acc.id}
-                              className="flex items-center gap-2 text-sm text-gray-700"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedAccounts.includes(acc.id)}
-                                disabled={user?.role !== "ADMIN"}
-                                onChange={() => toggleAccount(acc.id)}
-                                className="accent-blue-600"
-                              />
-
-                              <span className="font-mono text-gray-900">
-                                {acc.accountId}
-                              </span>
-
-                              <span className="text-gray-500">
-                                ({acc.accountName})
-                              </span>
-                            </label>
-                          ))
-                        )}
-                      </div>
-
-                      {user?.role !== "ADMIN" && (
-                        <p className="text-xs text-gray-400 mt-1">
-                          Only Admin users can modify account assignments.
-                        </p>
-                      )}
+                    <div className="border p-3 rounded bg-gray-50">
+                      {accounts.map(acc => (
+                        <label key={acc.id} className="flex gap-2 text-sm">
+                          <input
+                            type="checkbox"
+                            checked={selectedAccounts.includes(acc.id)}
+                            disabled={user?.role !== "ADMIN"}
+                            onChange={() => toggleAccount(acc.id)}
+                          />
+                          {acc.accountId} ({acc.accountName})
+                        </label>
+                      ))}
                     </div>
                   )}
 
                   {/* BUTTONS */}
-                  <div className="flex items-center gap-3 mt-4">
-                    <button
-                      onClick={handleCancel}
-                      className="px-4 py-2 text-sm bg-white border border-gray-200 rounded hover:bg-gray-50"
-                    >
-                      Cancel
-                    </button>
-
+                  <div className="flex gap-3">
+                    <button onClick={handleCancel} className="border px-4 py-2 rounded">Cancel</button>
                     <button
                       type="submit"
                       disabled={user?.role !== "ADMIN"}
-                      className={`px-4 py-2 text-sm rounded ${
+                      className={`px-4 py-2 rounded ${
                         user?.role === "ADMIN"
-                          ? "bg-blue-600 text-white hover:bg-blue-700"
-                          : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-300 text-gray-600"
                       }`}
                     >
                       Create User
                     </button>
                   </div>
+
                 </form>
               </div>
             </div>

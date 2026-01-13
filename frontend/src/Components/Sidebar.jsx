@@ -1,13 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useSelector } from "react-redux";
 
 export default function Sidebar({ selected, collapsed = false }) {
   const navigate = useNavigate();
-  const { user } = useAuth();
 
+  const user = useSelector(state => state.auth.user);
   const role = user?.role;
 
-  /* ---------------- MENU CONFIG ---------------- */
+  if (!role) return null; // ⬅ prevents flicker
+
   const menuItems = [
     {
       key: "users",
@@ -39,8 +40,7 @@ export default function Sidebar({ selected, collapsed = false }) {
     },
   ];
 
-  /* ---------------- FILTER BY ROLE ---------------- */
-  const visibleItems = menuItems.filter((item) =>
+  const visibleItems = menuItems.filter(item =>
     item.roles.includes(role)
   );
 
@@ -51,7 +51,7 @@ export default function Sidebar({ selected, collapsed = false }) {
       }`}
     >
       <nav className="space-y-1">
-        {visibleItems.map((item) => (
+        {visibleItems.map(item => (
           <button
             key={item.key}
             onClick={() => navigate(item.path)}
@@ -62,7 +62,6 @@ export default function Sidebar({ selected, collapsed = false }) {
             }`}
           >
             <span className="text-lg">{item.icon}</span>
-
             {!collapsed && <span>{item.label}</span>}
           </button>
         ))}
