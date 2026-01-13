@@ -2,39 +2,29 @@ package com.cloudBalance.controller;
 
 import com.cloudBalance.dto.ServiceCostDTO;
 import com.cloudBalance.service.CostExplorerService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cost")
+@RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class CostExplorerController {
 
     private final CostExplorerService service;
 
-    public CostExplorerController(CostExplorerService service) {
-        this.service = service;
-    }
-
     @GetMapping("/explorer")
-    public List<ServiceCostDTO> explorer(
+    public ResponseEntity<List<ServiceCostDTO>> explorer(
             @RequestParam String groupBy,
             @RequestParam String from,
             @RequestParam String to,
-            @RequestParam Map<String, String> params) {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        LocalDate fromDate = LocalDate.parse(from, formatter);
-        LocalDate toDate = LocalDate.parse(to, formatter);
-
-        params.remove("groupBy");
-        params.remove("from");
-        params.remove("to");
-
-        return service.getExplorerData(groupBy, fromDate, toDate, params);
+            @RequestParam Map<String, String> params
+    ) {
+        return ResponseEntity.ok(service.getExplorerData(groupBy, from, to, params));
     }
 }
+

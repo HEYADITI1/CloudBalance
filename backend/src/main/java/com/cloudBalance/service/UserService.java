@@ -2,6 +2,8 @@ package com.cloudBalance.service;
 
 import com.cloudBalance.dto.AddUserRequest;
 import com.cloudBalance.dto.UpdateUserRequest;
+import com.cloudBalance.dto.UserResponse;
+import com.cloudBalance.mapper.UserMapper;
 import com.cloudBalance.model.CloudAccount;
 import com.cloudBalance.model.Role;
 import com.cloudBalance.model.User;
@@ -22,18 +24,36 @@ public class UserService {
     private final CloudAccountRepository cloudAccountRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository,
-                       RoleRepository roleRepository,
-                       CloudAccountRepository cloudAccountRepository,
-                       PasswordEncoder passwordEncoder) {
+    // ✅ FIXED CONSTRUCTOR
+    public UserService(
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            CloudAccountRepository cloudAccountRepository,
+            PasswordEncoder passwordEncoder
+    ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.cloudAccountRepository = cloudAccountRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
+    // GET ALL USERS
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(UserMapper::toResponse)
+                .toList();
+    }
+
+    // GET USER BY ID
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return UserMapper.toResponse(user);
+    }
+
     // CREATE USER
-    public void createUser(AddUserRequest req) {
+    public UserResponse createUser(AddUserRequest req) {
 
         Role role = roleRepository.findByName(req.getRole())
                 .orElseThrow(() -> new RuntimeException("Role not found"));
@@ -47,10 +67,8 @@ public class UserService {
                 req.getIsActive()
         );
 
-        // ONLY CUSTOMER CAN HAVE ACCOUNTS
         if ("CUSTOMER".equals(req.getRole())) {
             if (req.getCloudAccountIds() != null && !req.getCloudAccountIds().isEmpty()) {
-
                 List<CloudAccount> accounts =
                         cloudAccountRepository.findAllById(req.getCloudAccountIds());
 
@@ -62,56 +80,43 @@ public class UserService {
             }
         }
 
-        userRepository.save(user);
+        User saved = userRepository.save(user);
+        return UserMapper.toResponse(saved);
     }
 
     // UPDATE USER
-    public User updateUser(Long id, UpdateUserRequest req) {
+    public UserResponse updateUser(Long id, UpdateUserRequest req) {
 
         User existing = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        String oldRole = existing.getRole().getName();
-        String newRole = req.getRole();
 
         existing.setFirstName(req.getFirstName());
         existing.setLastName(req.getLastName());
         existing.setEmail(req.getEmail());
         existing.setIsActive(req.getIsActive());
 
-        // Update password only if provided
         if (req.getPassword() != null && !req.getPassword().isBlank()) {
             existing.setPassword(passwordEncoder.encode(req.getPassword()));
         }
 
-        // Update role if changed
-        if (newRole != null && !newRole.equals(oldRole)) {
-            Role role = roleRepository.findByName(newRole)
+        if (req.getRole() != null) {
+            Role role = roleRepository.findByName(req.getRole())
                     .orElseThrow(() -> new RuntimeException("Role not found"));
             existing.setRole(role);
         }
 
-        // ACCOUNT HANDLING
-        if ("CUSTOMER".equals(newRole)) {
-
+        if ("CUSTOMER".equals(req.getRole())) {
             existing.getCloudAccounts().clear();
-
-            if (req.getCloudAccountIds() != null && !req.getCloudAccountIds().isEmpty()) {
-
-                List<CloudAccount> accounts =
-                        cloudAccountRepository.findAllById(req.getCloudAccountIds());
-
-                if (accounts.size() != req.getCloudAccountIds().size()) {
-                    throw new RuntimeException("Invalid cloud account selection");
-                }
-
-                existing.getCloudAccounts().addAll(accounts);
+            if (req.getCloudAccountIds() != null) {
+                existing.getCloudAccounts().addAll(
+                        cloudAccountRepository.findAllById(req.getCloudAccountIds())
+                );
             }
-
         } else {
             existing.getCloudAccounts().clear();
         }
 
-        return userRepository.save(existing);
+        User saved = userRepository.save(existing);
+        return UserMapper.toResponse(saved);
     }
 }

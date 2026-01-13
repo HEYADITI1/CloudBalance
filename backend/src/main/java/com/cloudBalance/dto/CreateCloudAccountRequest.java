@@ -1,5 +1,6 @@
 package com.cloudBalance.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +10,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CreateCloudAccountRequest {
 
-    private String accountId;     // from onboarding UI
-    private String accountName;   // from onboarding UI
-    private String arn;           // from onboarding UI
+    @NotBlank(message = "Account ID is required")
+    private String accountId;
+
+    @NotBlank(message = "Account Name is required")
+    private String accountName;
+
+    @NotBlank(message = "ARN is required")
+    private String arn;
 }

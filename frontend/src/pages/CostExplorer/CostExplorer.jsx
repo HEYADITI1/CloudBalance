@@ -18,7 +18,7 @@ export default function CostExplorer() {
         <div className="flex gap-6 w-full">
           <Sidebar selected="cost-explorer" collapsed={collapsed} />
 
-          <div className="flex-1 min-w-0 w-full">
+          <div className="flex-1 max-w-[calc(100vw-330px)]">
             <CostExplorerContainer />
           </div>
         </div>

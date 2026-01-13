@@ -1,8 +1,9 @@
 package com.cloudBalance.controller;
 
 import com.cloudBalance.dto.LoginRequest;
+import com.cloudBalance.dto.LoginResponse;
 import com.cloudBalance.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,11 +12,16 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:5174")
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request.getEmail(), request.getPassword()));
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(
+                authService.login(request.getEmail(), request.getPassword())
+        );
     }
 }

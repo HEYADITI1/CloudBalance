@@ -64,7 +64,14 @@ const authSlice = createSlice({
       })
       .addCase(loginThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        // state.user = action.payload;
+        state.user = {
+    email: action.payload.email,
+    firstName: action.payload.firstName,
+    lastName: action.payload.lastName,
+    role: action.payload.role,
+    isActive: action.payload.isActive,
+  };
         console.log(action.payload);
         state.token = action.payload.token;
         localStorage.setItem("user", JSON.stringify(action.payload));

@@ -1,61 +1,65 @@
 package com.cloudBalance.service;
 
+import com.cloudBalance.dto.LoginResponse;
+import com.cloudBalance.exception.UnauthorizedException;
 import com.cloudBalance.model.User;
 import com.cloudBalance.repository.UserRepository;
 import com.cloudBalance.config.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Service
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepo;
+    private final UserRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AuthService(
+            UserRepository userRepo,
+            PasswordEncoder passwordEncoder,
+            JwtUtil jwtUtil
+    ) {
+        this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
+    }
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    public LoginResponse login(String email, String rawPassword) {
 
-    public Object login(String email, String rawPassword) {
-
-        // 1. Validate input
         if (email == null || rawPassword == null) {
-            return Map.of("error", "Email or password missing");
+            throw new UnauthorizedException("Email or password missing");
         }
 
-        // 2. Fetch user from DB
-        User user = userRepo.findByEmail(email).orElse(null);
-        if (user == null) {
-            return Map.of("error", "User not found");
-        }
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UnauthorizedException("User not found"));
 
-        // 3. Validate password
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
-            return Map.of("error", "Invalid credentials");
+            throw new UnauthorizedException("Invalid credentials");
         }
 
-        // 4. Generate JWT Token
+        if (!Boolean.TRUE.equals(user.getIsActive())) {
+            throw new UnauthorizedException("User is inactive");
+        }
+
         String token = jwtUtil.generateToken(
                 user.getEmail(),
                 user.getRole().getName()
         );
+
         user.setLastLogin(LocalDateTime.now());
         userRepo.save(user);
 
-        // 5. Successful login response
-        return Map.of(
-                "token", token,
-                "email", user.getEmail(),
-                "firstName", user.getFirstName(),
-                "lastName", user.getLastName(),
-                "role", user.getRole().getName(),
-                "isActive", user.getIsActive()
+        return new LoginResponse(
+                token,
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getRole().getName(),
+                user.getIsActive()
         );
     }
 }
