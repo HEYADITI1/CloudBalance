@@ -44,11 +44,12 @@ export default function Onboarding() {
       />
 
       {/* MAIN BODY */}
-      <main className="flex-1 px-6 py-6 pb-24">
+      <main className="flex-1 p-6 pb-24">
         <div className="flex gap-6 h-full">
           {/* SIDEBAR */}
-          <Sidebar selected="onboarding" collapsed={collapsed} />
-
+          <div className="h-[calc(100vh-124px)]">
+            <Sidebar selected="onboarding" collapsed={collapsed} />
+          </div>
           {/* CONTENT */}
           <div className="flex-1 bg-white border border-gray-200 rounded-md p-6 overflow-y-auto">
             {page === 1 && (

@@ -17,6 +17,8 @@ export default function AddUser() {
     firstName: "",
     lastName: "",
     email: "",
+    password: "",
+    confirmPassword: "",
     role: "ADMIN",
     isActive: true,
   });
@@ -58,9 +60,7 @@ export default function AddUser() {
     if (user?.role !== "ADMIN") return;
 
     setSelectedAccounts((prev) =>
-      prev.includes(id)
-        ? prev.filter((a) => a !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]
     );
   };
 
@@ -77,14 +77,19 @@ export default function AddUser() {
       return;
     }
 
+    if (form.password !== form.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
     const payload = {
       firstName: form.firstName,
       lastName: form.lastName,
       email: form.email,
+      password: form.password,
       role: form.role,
       isActive: form.isActive,
-      cloudAccountIds:
-        form.role === "CUSTOMER" ? selectedAccounts : [],
+      cloudAccountIds: form.role === "CUSTOMER" ? selectedAccounts : [],
     };
 
     try {
@@ -104,8 +109,8 @@ export default function AddUser() {
         onToggleCollapse={() => setCollapsed((s) => !s)}
       />
 
-      <main className="flex-1 w-full px-6 py-6 pb-28">
-        <div className="flex items-start gap-6">
+      <main className="flex-1 w-full p-6 pb-28">
+        <div className="flex gap-6">
           <Sidebar selected="users" collapsed={collapsed} />
 
           <div className="flex-1">
@@ -162,6 +167,35 @@ export default function AddUser() {
                       name="email"
                       type="email"
                       value={form.email}
+                      onChange={onChange}
+                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
+                      required
+                    />
+                  </div>
+
+                  {/* Password */}
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={form.password}
+                      onChange={onChange}
+                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={form.confirmPassword}
                       onChange={onChange}
                       className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
                       required

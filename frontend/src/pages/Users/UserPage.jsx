@@ -13,8 +13,6 @@ export default function UserPage() {
 
   const [users, setUsers] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
-  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
-
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -110,8 +108,8 @@ export default function UserPage() {
         onToggleCollapse={() => setCollapsed((s) => !s)}
       />
 
-      <main className="flex-1 w-full px-6 py-6 pb-28">
-        <div className="flex items-start gap-6">
+      <main className="flex-1 w-full p-6 pb-28">
+        <div className="flex gap-6 h-full">
           <Sidebar selected="users" collapsed={collapsed} />
 
           <div className="flex-1">

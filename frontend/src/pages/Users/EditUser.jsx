@@ -23,6 +23,7 @@ export default function EditUser() {
     firstName: "",
     lastName: "",
     email: "",
+    password: "",
     role: "ADMIN",
     isActive: true,
   });
@@ -115,9 +116,12 @@ export default function EditUser() {
       email: form.email,
       role: form.role,
       isActive: form.isActive,
-      cloudAccountIds:
-        form.role === "CUSTOMER" ? selectedAccounts : [],
+      cloudAccountIds: form.role === "CUSTOMER" ? selectedAccounts : [],
     };
+
+    if (form.password && form.password.trim() !== "") {
+      payload.password = form.password;
+    }
 
     try {
       await updateUser(id, payload);
@@ -138,16 +142,17 @@ export default function EditUser() {
 
   /* ---------------- UI ---------------- */
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className=" bg-gray-50 flex flex-col">
       <Header
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed((s) => !s)}
       />
 
-      <main className="flex-1 w-full px-6 py-6 pb-28">
-        <div className="flex items-start gap-6">
-          <Sidebar selected="users" collapsed={collapsed} />
-
+      <main className="flex-1 w-full p-6 pb-28">
+        <div className="flex gap-6">
+          {/* <div className="h-[calc(100vh-120px)]"> */}
+            <Sidebar selected="users" collapsed={collapsed} />
+          {/* </div> */}
           <div className="flex-1">
             <div className="w-full max-w-3xl">
               <div className="text-sm text-gray-500 mb-4">
@@ -209,6 +214,21 @@ export default function EditUser() {
                     />
                   </div>
 
+                  {/* Password */}
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">
+                      New Password (optional)
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={form.password}
+                      onChange={onChange}
+                      placeholder="Leave blank to keep existing password"
+                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
+                    />
+                  </div>
+
                   {/* ROLE */}
                   <div className="grid grid-cols-2 gap-4 items-center">
                     {/* ROLE DROPDOWN */}
@@ -244,18 +264,23 @@ export default function EditUser() {
                         />
 
                         <div
-                          className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${form.isActive ? "bg-blue-600" : "bg-gray-200"
-                            } ${user?.role !== "ADMIN" ? "opacity-60 cursor-not-allowed" : ""}`}
+                          className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${
+                            form.isActive ? "bg-blue-600" : "bg-gray-200"
+                          } ${
+                            user?.role !== "ADMIN"
+                              ? "opacity-60 cursor-not-allowed"
+                              : ""
+                          }`}
                         >
                           <div
-                            className={`bg-white w-4 h-4 rounded-full shadow-sm transform transition-transform ${form.isActive ? "translate-x-5" : ""
-                              }`}
+                            className={`bg-white w-4 h-4 rounded-full shadow-sm transform transition-transform ${
+                              form.isActive ? "translate-x-5" : ""
+                            }`}
                           />
                         </div>
                       </label>
                     </div>
                   </div>
-
 
                   {/* ACCOUNTS – ONLY FOR CUSTOMER */}
                   {form.role === "CUSTOMER" && (
@@ -282,9 +307,7 @@ export default function EditUser() {
                                 disabled={user?.role !== "ADMIN"}
                                 onChange={() => toggleAccount(acc.id)}
                               />
-                              <span className="font-mono">
-                                {acc.accountId}
-                              </span>
+                              <span className="font-mono">{acc.accountId}</span>
                               <span className="text-gray-500">
                                 ({acc.accountName})
                               </span>
@@ -299,9 +322,7 @@ export default function EditUser() {
                           </h4>
 
                           {accounts
-                            .filter((acc) =>
-                              selectedAccounts.includes(acc.id)
-                            )
+                            .filter((acc) => selectedAccounts.includes(acc.id))
                             .map((acc) => (
                               <div key={acc.id} className="text-sm">
                                 ✓ {acc.accountId} ({acc.accountName})
@@ -324,10 +345,11 @@ export default function EditUser() {
                     <button
                       type="submit"
                       disabled={user?.role !== "ADMIN"}
-                      className={`px-4 py-2 text-sm rounded ${user?.role === "ADMIN"
+                      className={`px-4 py-2 text-sm rounded ${
+                        user?.role === "ADMIN"
                           ? "bg-blue-600 text-white"
                           : "bg-gray-300 text-gray-600"
-                        }`}
+                      }`}
                     >
                       Save Changes
                     </button>

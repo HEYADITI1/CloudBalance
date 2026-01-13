@@ -14,6 +14,8 @@ public class UpdateUserRequest {
     private String email;
     private String role;
     private Boolean isActive;
+    private String password;
+
 
     private List<Long> cloudAccountIds;
 }

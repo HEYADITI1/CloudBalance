@@ -46,7 +46,7 @@ export default function Sidebar({ selected, collapsed = false }) {
 
   return (
     <aside
-      className={`bg-white border border-gray-200 rounded-md p-3 ${
+      className={`bg-white border border-gray-200 rounded-md p-3 h-[calc(100vh-197px)] ${
         collapsed ? "w-16" : "w-60"
       }`}
     >

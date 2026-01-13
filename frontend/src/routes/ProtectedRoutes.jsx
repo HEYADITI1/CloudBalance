@@ -11,7 +11,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
 
   // Role check (if provided)
   if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    return <Navigate to="/users" replace />;
+    return <Navigate to="/not-authorized" replace />;
   }
 
   return children;
