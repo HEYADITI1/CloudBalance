@@ -15,11 +15,9 @@ export default function UserPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Redux auth
   const user = useSelector((state) => state.auth.user);
   const role = user?.role;
 
-  // Fetch users from API
   useEffect(() => {
     if (!role) return;
 
@@ -83,10 +81,6 @@ export default function UserPage() {
 
   const handleEdit = (id) => {
     navigate(`/users/${id}/edit`);
-  };
-
-  const handleResend = (id) => {
-    console.log("Resend invite / link to user id:", id);
   };
 
   const baseDisplayedUsers = useMemo(

@@ -7,7 +7,7 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { loading, error, token } = useSelector(state => state.auth);
+  const { error, token } = useSelector(state => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,14 +26,12 @@ export default function LoginPage() {
     return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="w-full max-w-md px-6">
-        {/* Logo */}
         <div className="flex justify-center mb-8">
           <img src="/CKlogo.png" alt="CloudKeeper Logo" className="h-10 w-auto" />
         </div>
 
         {/* Form */}
         <form onSubmit={handleLogin} className="space-y-5">
-          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email <span className="text-red-500">*</span>
@@ -48,7 +46,6 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password <span className="text-red-500">*</span>
@@ -63,7 +60,6 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Error */}
           {error && (
             <p className="text-red-500 text-sm mt-1">{error}</p>
           )}

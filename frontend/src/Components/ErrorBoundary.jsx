@@ -11,7 +11,6 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // You can later send this to logging service
     console.error("Global error caught:", error, errorInfo);
   }
 

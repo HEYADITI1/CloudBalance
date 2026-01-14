@@ -39,7 +39,6 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain chain)
             throws ServletException, IOException {
 
-        System.out.println("\n============ JWT FILTER DEBUG ==============");
         System.out.println("REQUEST: " + request.getMethod() + " " + request.getServletPath());
 
         String header = request.getHeader("Authorization");
@@ -55,7 +54,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 email = jwtUtil.extractEmail(token);
                 System.out.println("EXTRACTED EMAIL FROM TOKEN = " + email);
             } catch (Exception e) {
-                System.out.println("❌ JWT parsing failed: " + e.getMessage());
+                System.out.println("JWT parsing failed: " + e.getMessage());
             }
         }
 
@@ -63,7 +62,7 @@ public class JwtFilter extends OncePerRequestFilter {
             User user = userRepo.findByEmail(email).orElse(null);
 
             if (user != null) {
-                String roleName = user.getRole().getName(); // ADMIN, READ_ONLY, CUSTOMER
+                String roleName = user.getRole().getName();
 
                 List<SimpleGrantedAuthority> authorities =
                         List.of(new SimpleGrantedAuthority("ROLE_" + roleName));

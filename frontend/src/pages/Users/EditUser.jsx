@@ -13,8 +13,7 @@ export default function EditUser() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // 🔐 Redux auth
-  const user = useSelector(state => state.auth.user);
+  const user = useSelector((state) => state.auth.user);
 
   const [accounts, setAccounts] = useState([]);
   const [selectedAccounts, setSelectedAccounts] = useState([]);
@@ -30,7 +29,6 @@ export default function EditUser() {
 
   const [loading, setLoading] = useState(true);
 
-  /* ---------------- FETCH USER ---------------- */
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -47,7 +45,7 @@ export default function EditUser() {
         });
 
         setSelectedAccounts(
-          u.cloudAccounts ? u.cloudAccounts.map(a => a.id) : []
+          u.cloudAccounts ? u.cloudAccounts.map((a) => a.id) : []
         );
       } catch (err) {
         console.error(err);
@@ -61,7 +59,6 @@ export default function EditUser() {
     fetchUser();
   }, [id, navigate]);
 
-  /* ---------------- FETCH CLOUD ACCOUNTS ---------------- */
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
@@ -75,17 +72,16 @@ export default function EditUser() {
     fetchAccounts();
   }, []);
 
-  /* ---------------- CLEAR ACCOUNTS IF ROLE ≠ CUSTOMER ---------------- */
+  /* CLEAR ACCOUNTS IF ROLE IS NOT CUSTOMER*/
   useEffect(() => {
     if (form.role !== "CUSTOMER") {
       setSelectedAccounts([]);
     }
   }, [form.role]);
 
-  /* ---------------- HANDLERS ---------------- */
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
@@ -94,9 +90,9 @@ export default function EditUser() {
   const toggleAccount = (accountId) => {
     if (user?.role !== "ADMIN") return;
 
-    setSelectedAccounts(prev =>
+    setSelectedAccounts((prev) =>
       prev.includes(accountId)
-        ? prev.filter(id => id !== accountId)
+        ? prev.filter((id) => id !== accountId)
         : [...prev, accountId]
     );
   };
@@ -166,199 +162,186 @@ export default function EditUser() {
                 <h2 className="text-lg font-semibold mb-4">Edit User</h2>
 
                 <form onSubmit={handleUpdate} className="space-y-4">
+                  <h2 className="text-lg font-semibold mb-4">Edit User</h2>
 
-  <h2 className="text-lg font-semibold mb-4">Edit User</h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-gray-700 mb-1">
+                        First Name
+                      </label>
+                      <input
+                        name="firstName"
+                        value={form.firstName}
+                        onChange={onChange}
+                        className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
+                        required
+                      />
+                    </div>
 
-  {/* FIRST / LAST NAME */}
-  <div className="grid grid-cols-2 gap-4">
-    <div>
-      <label className="block text-sm text-gray-700 mb-1">
-        First Name
-      </label>
-      <input
-        name="firstName"
-        value={form.firstName}
-        onChange={onChange}
-        className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-        required
-      />
-    </div>
+                    <div>
+                      <label className="block text-sm text-gray-700 mb-1">
+                        Last Name
+                      </label>
+                      <input
+                        name="lastName"
+                        value={form.lastName}
+                        onChange={onChange}
+                        className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
+                      />
+                    </div>
+                  </div>
 
-    <div>
-      <label className="block text-sm text-gray-700 mb-1">
-        Last Name
-      </label>
-      <input
-        name="lastName"
-        value={form.lastName}
-        onChange={onChange}
-        className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-      />
-    </div>
-  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">
+                      Email ID
+                    </label>
+                    <input
+                      name="email"
+                      type="email"
+                      value={form.email}
+                      onChange={onChange}
+                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
+                      required
+                    />
+                  </div>
 
-  {/* EMAIL */}
-  <div>
-    <label className="block text-sm text-gray-700 mb-1">
-      Email ID
-    </label>
-    <input
-      name="email"
-      type="email"
-      value={form.email}
-      onChange={onChange}
-      className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-      required
-    />
-  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      name="password"
+                      value={form.password}
+                      onChange={onChange}
+                      placeholder="Leave blank to keep existing password"
+                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
+                    />
+                  </div>
 
-  {/* PASSWORD */}
-  <div>
-    <label className="block text-sm text-gray-700 mb-1">
-      Password
-    </label>
-    <input
-      type="password"
-      name="password"
-      value={form.password}
-      onChange={onChange}
-      placeholder="Leave blank to keep existing password"
-      className="w-full border border-gray-200 rounded px-3 py-2 text-sm"
-    />
-  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">
+                      Role
+                    </label>
+                    <select
+                      name="role"
+                      value={form.role}
+                      onChange={onChange}
+                      className="w-full border border-gray-200 rounded px-3 py-2 text-sm bg-white"
+                    >
+                      <option value="ADMIN">Admin</option>
+                      <option value="READ_ONLY">Read Only</option>
+                      <option value="CUSTOMER">Customer</option>
+                    </select>
+                  </div>
 
-  {/* ROLE */}
-  <div>
-    <label className="block text-sm text-gray-700 mb-1">
-      Role
-    </label>
-    <select
-      name="role"
-      value={form.role}
-      onChange={onChange}
-      className="w-full border border-gray-200 rounded px-3 py-2 text-sm bg-white"
-    >
-      <option value="ADMIN">Admin</option>
-      <option value="READ_ONLY">Read Only</option>
-      <option value="CUSTOMER">Customer</option>
-    </select>
-  </div>
+                  {form.role === "CUSTOMER" && (
+                    <div>
+                      <label className="block text-sm text-gray-700 mb-2">
+                        Accounts
+                      </label>
 
-  {/* ACCOUNTS – ONLY FOR CUSTOMER */}
-  {form.role === "CUSTOMER" && (
-  <div>
-    <label className="block text-sm text-gray-700 mb-2">
-      Accounts
-    </label>
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* ALL ACCOUNTS */}
+                        <div className="border border-gray-200 rounded p-3 bg-gray-50 max-h-64 overflow-y-auto">
+                          <p className="text-sm font-medium text-gray-700 mb-2">
+                            All Accounts
+                          </p>
 
-    <div className="grid grid-cols-2 gap-4">
+                          {accounts.map((acc) => (
+                            <label
+                              key={acc.id}
+                              className="flex items-center gap-2 text-sm text-gray-700"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selectedAccounts.includes(acc.id)}
+                                disabled={user?.role !== "ADMIN"}
+                                onChange={() => toggleAccount(acc.id)}
+                                className="accent-blue-600"
+                              />
 
-      {/* ALL ACCOUNTS */}
-      <div className="border border-gray-200 rounded p-3 bg-gray-50 max-h-64 overflow-y-auto">
-        <p className="text-sm font-medium text-gray-700 mb-2">
-          All Accounts
-        </p>
+                              <span className="font-mono text-gray-900">
+                                {acc.accountId}
+                              </span>
 
-        {accounts.map(acc => (
-          <label
-            key={acc.id}
-            className="flex items-center gap-2 text-sm text-gray-700"
-          >
-            <input
-              type="checkbox"
-              checked={selectedAccounts.includes(acc.id)}
-              disabled={user?.role !== "ADMIN"}
-              onChange={() => toggleAccount(acc.id)}
-              className="accent-blue-600"
-            />
+                              <span className="text-gray-500">
+                                ({acc.accountName})
+                              </span>
+                            </label>
+                          ))}
+                        </div>
 
-            <span className="font-mono text-gray-900">
-              {acc.accountId}
-            </span>
+                        {/* LINKED ACCOUNTS */}
+                        <div className="border border-gray-200 rounded p-3 bg-white max-h-64 overflow-y-auto">
+                          <p className="text-sm font-medium text-gray-700 mb-2">
+                            Linked Accounts
+                          </p>
 
-            <span className="text-gray-500">
-              ({acc.accountName})
-            </span>
-          </label>
-        ))}
-      </div>
+                          {selectedAccounts.length === 0 ? (
+                            <p className="text-sm text-gray-400 italic">
+                              No accounts linked
+                            </p>
+                          ) : (
+                            selectedAccounts.map((id) => {
+                              const acc = accounts.find((a) => a.id === id);
 
-      {/* LINKED ACCOUNTS */}
-<div className="border border-gray-200 rounded p-3 bg-white max-h-64 overflow-y-auto">
-  <p className="text-sm font-medium text-gray-700 mb-2">
-    Linked Accounts
-  </p>
+                              return (
+                                <div
+                                  key={id}
+                                  className="flex items-center gap-2 text-sm text-gray-700"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked
+                                    readOnly
+                                    className="accent-blue-600 cursor-default"
+                                  />
 
-  {selectedAccounts.length === 0 ? (
-    <p className="text-sm text-gray-400 italic">
-      No accounts linked
-    </p>
-  ) : (
-    selectedAccounts.map(id => {
-      const acc = accounts.find(a => a.id === id);
+                                  <span className="font-mono text-gray-900">
+                                    {acc?.accountId}
+                                  </span>
 
-      return (
-        <div
-          key={id}
-          className="flex items-center gap-2 text-sm text-gray-700"
-        >
-          <input
-            type="checkbox"
-            checked
-            readOnly
-            className="accent-blue-600 cursor-default"
-          />
+                                  <span className="text-gray-500">
+                                    ({acc?.accountName})
+                                  </span>
+                                </div>
+                              );
+                            })
+                          )}
+                        </div>
+                      </div>
 
-          <span className="font-mono text-gray-900">
-            {acc?.accountId}
-          </span>
+                      {user?.role !== "ADMIN" && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Only Admin users can modify account assignments.
+                        </p>
+                      )}
+                    </div>
+                  )}
 
-          <span className="text-gray-500">
-            ({acc?.accountName})
-          </span>
-        </div>
-      );
-    })
-  )}
-</div>
+                  <div className="flex items-center gap-3 mt-4">
+                    <button
+                      type="button"
+                      onClick={handleCancel}
+                      className="px-4 py-2 text-sm bg-white border border-gray-200 rounded hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
 
-
-    </div>
-
-    {user?.role !== "ADMIN" && (
-      <p className="text-xs text-gray-400 mt-1">
-        Only Admin users can modify account assignments.
-      </p>
-    )}
-  </div>
-)}
-
-
-  {/* BUTTONS */}
-  <div className="flex items-center gap-3 mt-4">
-    <button
-      type="button"
-      onClick={handleCancel}
-      className="px-4 py-2 text-sm bg-white border border-gray-200 rounded hover:bg-gray-50"
-    >
-      Cancel
-    </button>
-
-    <button
-      type="submit"
-      disabled={user?.role !== "ADMIN"}
-      className={`px-4 py-2 text-sm rounded ${
-        user?.role === "ADMIN"
-          ? "bg-blue-600 text-white hover:bg-blue-700"
-          : "bg-gray-300 text-gray-600 cursor-not-allowed"
-      }`}
-    >
-      Save Changes
-    </button>
-  </div>
-
-</form>
-
+                    <button
+                      type="submit"
+                      disabled={user?.role !== "ADMIN"}
+                      className={`px-4 py-2 text-sm rounded ${
+                        user?.role === "ADMIN"
+                          ? "bg-blue-600 text-white hover:bg-blue-700"
+                          : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      }`}
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

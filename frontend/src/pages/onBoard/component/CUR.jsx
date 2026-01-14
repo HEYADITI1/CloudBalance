@@ -11,7 +11,7 @@ const rolePath = `275595855473`;
 const CUR = () => {
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    toast.success("text copied")
+    toast.success("text copied");
   };
 
   return (
@@ -35,7 +35,6 @@ const CUR = () => {
         </p>
       </div>
 
-      {/* Code block */}
       <div className="relative bg-gray-50 border rounded-md p-1 text-sm font-mono max-w-sm group cursor-pointer">
         <button
           onClick={() => copyToClipboard(resourceID)}
@@ -51,7 +50,14 @@ const CUR = () => {
 
       <p>Ensure that the following configuration is checked</p>
       <div>
-        <input type="checkbox" value={true} onClick={(e)=>{e.target.value = !e.target.value}} /> <b>Include resource IDs</b>
+        <input
+          type="checkbox"
+          value={true}
+          onClick={(e) => {
+            e.target.value = !e.target.value;
+          }}
+        />{" "}
+        <b>Include resource IDs</b>
       </div>
 
       <p>
@@ -75,7 +81,13 @@ const CUR = () => {
       </div>
       <p>Ensure that the following configuration is checked</p>
       <div>
-        <input type="checkbox" value={true} onClick={(e)=>{e.target.value = !e.target.value}} />{" "}
+        <input
+          type="checkbox"
+          value={true}
+          onClick={(e) => {
+            e.target.value = !e.target.value;
+          }}
+        />{" "}
         <b>The following default policy will be applied to your bucket</b>
       </div>
       <p>
@@ -126,7 +138,13 @@ const CUR = () => {
       </p>
 
       <div>
-        <input type="checkbox" value={true} onClick={(e)=>{e.target.value = !e.target.value}}/>
+        <input
+          type="checkbox"
+          value={true}
+          onClick={(e) => {
+            e.target.value = !e.target.value;
+          }}
+        />
         <b> Amazon Athena</b>
       </div>
       <div className=" rounded-md overflow-hidden bg-gray-50">

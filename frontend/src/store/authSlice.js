@@ -17,7 +17,7 @@ export const loginThunk = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: JSON.parse(localStorage.getItem("user"))||null,
+    user: JSON.parse(localStorage.getItem("user")) || null,
     token: localStorage.getItem("token"),
     loading: false,
     error: null,
@@ -29,22 +29,21 @@ const authSlice = createSlice({
       localStorage.removeItem("token");
     },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(loginThunk.pending, state => {
+      .addCase(loginThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(loginThunk.fulfilled, (state, action) => {
         state.loading = false;
-        // state.user = action.payload;
         state.user = {
-    email: action.payload.email,
-    firstName: action.payload.firstName,
-    lastName: action.payload.lastName,
-    role: action.payload.role,
-    isActive: action.payload.isActive,
-  };
+          email: action.payload.email,
+          firstName: action.payload.firstName,
+          lastName: action.payload.lastName,
+          role: action.payload.role,
+          isActive: action.payload.isActive,
+        };
         console.log(action.payload);
         state.token = action.payload.token;
         localStorage.setItem("user", JSON.stringify(action.payload));

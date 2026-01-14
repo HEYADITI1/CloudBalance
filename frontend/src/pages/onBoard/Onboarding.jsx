@@ -19,10 +19,22 @@ export default function Onboarding() {
   const navigate = useNavigate();
 
   const changePage = (e) => {
-    const { name } = e.target;
-    if (name === "next") setPage((p) => p + 1);
-    if (name === "prev") setPage((p) => p - 1);
-  };
+  const { name } = e.target;
+
+  if (name === "next" && page === 1 && !isStepOneValid) {
+    toast.error("Please fill all account details first");
+    return;
+  }
+
+  if (name === "next") setPage((p) => p + 1);
+  if (name === "prev") setPage((p) => p - 1);
+};
+
+
+  const isStepOneValid =
+    account?.arn?.trim() &&
+    account?.accountId?.trim() &&
+    account?.accountName?.trim();
 
   const handleSubmit = async () => {
     try {
@@ -33,20 +45,17 @@ export default function Onboarding() {
       console.log(err);
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* HEADER */}
       <Header />
 
-      {/* MAIN BODY */}
       <main className="flex-1 p-6 pb-24">
         <div className="flex gap-6 h-full">
-          {/* SIDEBAR */}
           <div className="h-[calc(100vh-124px)]">
-            <Sidebar selected="users" />
+            <Sidebar selected="client-onboarding" />
           </div>
-          {/* CONTENT */}
           <div className="flex-1 bg-white border border-gray-200 rounded-md p-6 overflow-y-auto">
             {page === 1 && (
               <IamRoleCreation account={account} setAccount={setAccount} />
@@ -56,7 +65,6 @@ export default function Onboarding() {
 
             {page === 3 && <CUR />}
 
-            {/* BUTTON BAR */}
             <div className="pt-10 flex justify-between">
               <OnboardingButton
                 label="Prev"
@@ -70,6 +78,7 @@ export default function Onboarding() {
                   label="Next"
                   name="next"
                   clickFunction={changePage}
+                  disabled={page === 1 && !isStepOneValid}
                 />
               )}
 
@@ -85,7 +94,6 @@ export default function Onboarding() {
         </div>
       </main>
 
-      {/* FOOTER */}
       <Footer />
     </div>
   );

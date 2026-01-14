@@ -1,8 +1,8 @@
-import React from 'react'
+import React from "react";
 import img1 from "../../../assets/onbording/addcust1.png";
 import img2 from "../../../assets/onbording/addcust2.png";
 import img3 from "../../../assets/onbording/addcust3.png";
-import IndexPointer from './IndexPointer';
+import IndexPointer from "./IndexPointer";
 
 const PolicyManagement = () => {
   return (
@@ -10,9 +10,6 @@ const PolicyManagement = () => {
       {/* Step 1 */}
       <div className="flex gap-3 flex-wrap">
         <div className="flex gap-3">
-          {/* <span className="w-7 h-7 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-sm font-semibold mr-2">
-            1
-          </span> */}
           <IndexPointer num={1} />
           <p>
             Go to the{" "}
@@ -34,9 +31,6 @@ const PolicyManagement = () => {
       {/* Step 2 */}
       <div className="flex gap-3 flex-wrap">
         <div className="flex gap-3">
-          {/* <span className="w-7 h-7 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-sm font-semibold mr-2">
-            2
-          </span> */}
           <IndexPointer num={2} />
           <p>
             In Permission policies, click on Add permissions {">"} Attach Policy
@@ -54,9 +48,6 @@ const PolicyManagement = () => {
       {/* Step 3 */}
       <div className="flex gap-3 flex-wrap">
         <div className="flex gap-3">
-          {/* <span className="w-7 h-7 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-sm font-semibold mr-2">
-            3
-          </span> */}
           <IndexPointer num={3} />
           <p>
             Filter by Type {">"} Customer managed then search for
@@ -74,16 +65,11 @@ const PolicyManagement = () => {
       </div>
 
       <div className="flex gap-3">
-        {/* <span className="w-7 h-7 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600 text-sm font-semibold">
-          4
-        </span> */}
-          <IndexPointer num={4} />
+        <IndexPointer num={4} />
         <p>Now, click on Add permissions</p>
       </div>
-
-      {/* AWS Screenshot */}
     </div>
   );
-}
+};
 
-export default PolicyManagement
+export default PolicyManagement;

@@ -8,8 +8,6 @@ ReactFC.fcRoot(FusionCharts, Charts);
 export default function CostExplorerBody({
   groupBy,
   data,
-  loading,
-  error,
   fromDate,
   toDate,
   setFromDate,
@@ -113,7 +111,6 @@ export default function CostExplorerBody({
 
   return (
     <>
-      {/* TOP BAR */}
       <div className="flex justify-end mb-3 gap-2">
         <div className="flex items-center border rounded px-2 py-1 bg-white">
           <input type="date" value={fromDate} onChange={(e)=>setFromDate(e.target.value)} />

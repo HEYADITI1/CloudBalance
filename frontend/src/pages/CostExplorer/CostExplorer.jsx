@@ -11,7 +11,7 @@ export default function CostExplorer() {
 
       <main className="flex-1 px-6 py-6 flex">
         <div className="flex gap-6 w-full">
-          <Sidebar selected="users" />
+          <Sidebar selected="cost-explorer" />
 
           <div className="flex-1 max-w-[calc(100vw-330px)]">
             <CostExplorerContainer />

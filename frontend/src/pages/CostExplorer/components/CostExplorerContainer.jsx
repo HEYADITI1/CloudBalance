@@ -51,7 +51,6 @@ export default function CostExplorerContainer() {
 
   return (
     <div>
-      {/* HEADER FULL WIDTH */}
       <CostExplorerHeader
         groupBy={groupBy}
         setGroupBy={setGroupBy}
@@ -59,9 +58,7 @@ export default function CostExplorerContainer() {
         showFilters={showFilters}
       />
 
-      {/* BODY + FILTER ROW */}
       <div className="flex gap-6 w-full">
-        {/* BODY */}
         <div className="flex-1 w-full min-w-0">
           <CostExplorerBody
             groupBy={groupBy}
@@ -75,9 +72,8 @@ export default function CostExplorerContainer() {
           />
         </div>
 
-        {/* FILTER */}
         {showFilters && (
-          <div className="w-72 flex-shrink-0">
+          <div className="w-72 h-screen flex-shrink-0">
             <FilterPanel
               filters={filters}
               onApply={setFilters}

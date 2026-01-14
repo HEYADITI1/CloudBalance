@@ -4,13 +4,12 @@ import { useSelector } from "react-redux";
 export default function Sidebar({ selected }) {
   const navigate = useNavigate();
 
-  const user = useSelector(state => state.auth.user);
+  const user = useSelector((state) => state.auth.user);
   const role = user?.role;
 
-  const collapsed = useSelector(state => state.layout.sidebarCollapsed);
+  const collapsed = useSelector((state) => state.layout.sidebarCollapsed);
 
-
-  if (!role) return null; // ⬅ prevents flicker
+  if (!role) return null;
 
   const menuItems = [
     {
@@ -43,9 +42,7 @@ export default function Sidebar({ selected }) {
     },
   ];
 
-  const visibleItems = menuItems.filter(item =>
-    item.roles.includes(role)
-  );
+  const visibleItems = menuItems.filter((item) => item.roles.includes(role));
 
   return (
     <aside
@@ -54,7 +51,7 @@ export default function Sidebar({ selected }) {
       }`}
     >
       <nav className="space-y-1">
-        {visibleItems.map(item => (
+        {visibleItems.map((item) => (
           <button
             key={item.key}
             onClick={() => navigate(item.path)}

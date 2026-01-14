@@ -16,7 +16,6 @@ public class CloudAccountService {
 
     private final CloudAccountRepository cloudAccountRepo;
 
-    // CREATE
     public CloudAccountResponse create(CreateCloudAccountRequest req) {
 
         if (req.getAccountId() == null || req.getAccountId().isBlank())
@@ -41,7 +40,6 @@ public class CloudAccountService {
         return toResponse(cloudAccountRepo.save(account));
     }
 
-    // GET ALL
     public List<CloudAccountResponse> getAll() {
         return cloudAccountRepo.findAll()
                 .stream()
@@ -49,7 +47,6 @@ public class CloudAccountService {
                 .toList();
     }
 
-    // Mapper
     private CloudAccountResponse toResponse(CloudAccount a) {
         CloudAccountResponse r = new CloudAccountResponse();
         r.setId(a.getId());

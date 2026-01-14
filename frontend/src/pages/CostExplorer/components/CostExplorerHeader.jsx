@@ -49,7 +49,6 @@ export default function CostExplorerHeader({
 
   return (
     <div className="bg-white p-4 rounded border border-gray-200 mb-4 shadow-sm">
-      {/* TITLE */}
       <h1 className="text-lg font-semibold text-gray-800">Cost Explorer</h1>
 
       <p className="text-sm text-gray-500 mb-4">
@@ -57,7 +56,7 @@ export default function CostExplorerHeader({
       </p>
 
       <div className="flex flex-wrap items-center justify-between gap-4">
-        {/* GROUP BY BAR */}
+        {/* GROUP BY*/}
         <div className="flex gap-2 items-center flex-wrap">
           <span className="text-sm font-medium text-gray-700">
             Group By:
@@ -98,7 +97,7 @@ export default function CostExplorerHeader({
           )}
         </div>
 
-        {/* FILTER BUTTON */}
+        {/* FILTER*/}
         <button
           onClick={onToggleFilters}
           className={`p-2 border rounded transition ${

@@ -101,7 +101,6 @@ export default function FilterPanel({ filters, onApply, onReset, onClose }) {
 
   return (
     <div className="w-72 bg-white border border-gray-200 rounded shadow-sm p-4 flex flex-col h-full">
-      {/* HEADER */}
       <div className="flex justify-between mb-3">
         <h3 className="font-semibold text-gray-800">Filters</h3>
         <button className="text-blue-600 text-sm" onClick={onClose}>
@@ -109,7 +108,6 @@ export default function FilterPanel({ filters, onApply, onReset, onClose }) {
         </button>
       </div>
 
-      {/* FILTERS */}
       <div className="flex-1 overflow-y-auto">
         {renderFilter("SERVICE", "Service")}
         {renderFilter("REGION", "Region")}
@@ -117,7 +115,6 @@ export default function FilterPanel({ filters, onApply, onReset, onClose }) {
         {renderFilter("ACCOUNT_ID", "Account ID")}
       </div>
 
-      {/* FOOTER */}
       <div className="flex justify-between gap-2 mt-4 pt-3 border-t border-gray-200">
         <button
           onClick={() => {

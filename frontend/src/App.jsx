@@ -7,7 +7,7 @@ import UserPage from "./pages/Users/UserPage";
 import AddUser from "./pages/Users/AddUser";
 import EditUser from "./pages/Users/EditUser";
 import CostExplorer from "./pages/CostExplorer/CostExplorer";
-import NotAuthorized from "./pages/NotAuthorized";
+import NotAuthorized from "./pages/NotAuthorized";  {/* Root → Cost Explorer */}
 import ProtectedRoute from "./routes/ProtectedRoutes";
 import Onboarding from "./pages/onBoard/Onboarding";
 
@@ -20,16 +20,13 @@ export default function App() {
   return (
     <Routes>
 
-      {/* Root → Cost Explorer */}
       <Route path="/" element={<Navigate to="/cost-explorer" replace />} />
 
-      {/* Login */}
       <Route
         path="/login"
         element={token ? <Navigate to="/cost-explorer" replace /> : <LoginPage />}
       />
 
-      {/* Protected routes */}
       <Route
         path="/users"
         element={
@@ -86,7 +83,6 @@ export default function App() {
 
       <Route path="/not-authorized" element={<NotAuthorized />} />
 
-      {/* Fallback */}
       <Route path="*" element={<Navigate to="/login" replace />} />
 
     </Routes>
