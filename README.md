@@ -146,6 +146,37 @@ This project is developed for educational and learning purposes to understand:
 - FinOps concepts
 - RBAC implementation
 - Cloud cost management
-- Full-stack development 
+- Full-stack development
 
+
+## Screenshots of the Project
+
+
+![Login Page](https://github.com/HEYADITI1/CloudBalance/blob/main/Screenshots/Screenshot%20from%202026-01-20%2012-57-06.png)
+
+
+![Dashboard](https://github.com/HEYADITI1/CloudBalance/blob/main/Screenshots/Screenshot%20from%202026-01-20%2012-57-27.png)
+
+
+![User Management](https://github.com/HEYADITI1/CloudBalance/blob/main/Screenshots/Screenshot%20from%202026-01-20%2012-57-46.png)
+
+![Onboarding](https://github.com/HEYADITI1/CloudBalance/blob/main/Screenshots/Screenshot%20from%202026-01-20%2012-57-53.png)
+
+
+![Cost Explorer](https://github.com/HEYADITI1/CloudBalance/blob/main/Screenshots/Screenshot%20from%202026-01-20%2012-58-03.png)
+
+
+![Cost Chart](https://github.com/HEYADITI1/CloudBalance/blob/main/Screenshots/Screenshot%20from%202026-01-20%2012-58-11.png)
+
+
+![AWS Services](https://github.com/HEYADITI1/CloudBalance/blob/main/Screenshots/Screenshot%20from%202026-01-20%2012-58-22.png)
+
+
+![Account Selection](https://github.com/HEYADITI1/CloudBalance/blob/main/Screenshots/Screenshot%20from%202026-01-20%2012-58-31.png)
+
+
+![Cost Summary](https://github.com/HEYADITI1/CloudBalance/blob/main/Screenshots/Screenshot%20from%202026-01-20%2013-00-20.png)
+
+
+![Final View](https://github.com/HEYADITI1/CloudBalance/blob/main/Screenshots/Screenshot%20from%202026-01-20%2013-00-33.png)
 
